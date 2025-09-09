@@ -45,5 +45,12 @@ Route::resource('clientes', App\Http\Controllers\ClienteController::class);
 Route::resource('ventas', App\Http\Controllers\VentaController::class);
 ## Ruta para el buscador
 Route::get('buscar-productos', [App\Http\Controllers\VentaController::class, 'buscarProducto']);
+## Cargar ruta pdf
+Route::get('pdf', [App\Http\Controllers\VentaController::class, 'pdf']);
+## Ruta reporte cargo
+Route::get('reporte-cargos', [App\Http\Controllers\ReporteController::class, 'rpt_cargos']);
+## Ruta reporte cliente
+Route::get('reporte-clientes', [App\Http\Controllers\ReporteController::class, 'rpt_clientes']);
+
 // Buscador
 Route::get('/search', [App\Http\Controllers\SearchController::class, 'index'])->name('search');

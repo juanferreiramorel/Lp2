@@ -123,5 +123,35 @@
                 }
             })();
         </script>
+        <!-- REQUIRED SCRIPTS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script> --}}
+        
+        <!-- cargar codigo javascript desde los blade -->
+        @stack('scripts')
+        
+        <!-- CUSTOM SCRIPTS -->
+        <script>
+            //formato de numeros separador de miles
+            function format(input) {
+                // Eliminar puntos previos para evitar problemas con el replace
+                var num = input.value.replace(/\./g, '');
+
+                // Verificar si el valor es un número válido
+                if (!isNaN(num)) {
+                    // Invertir el string y aplicar la lógica del separador de miles
+                    num = num.split('').reverse().join('') // Invertir el número
+                        .replace(/(\d{3})(?=\d)/g, '$1.') // Agregar el punto cada 3 dígitos
+                        .split('').reverse().join(''); // Volver a invertir
+
+                    // Asignar el valor formateado al campo de entrada
+                    input.value = num;
+                } else {
+                    // Mostrar alerta y limpiar caracteres no numéricos
+                    alert("Por favor, introduce un número válido");
+                    input.value = input.value.replace(/[^\d]/g, ''); // Limpiar cualquier carácter no numérico
+                }
+            }
+        </script>
     </body>
 </x-laravel-ui-adminlte::adminlte-layout>

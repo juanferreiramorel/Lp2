@@ -83,13 +83,14 @@
 <!-- Total Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('total', 'Total:') !!}
-    {!! Form::number('total', null, ['class' => 'form-control', 'id' => 'total']) !!}
+    {!! Form::text('total', isset($ventas) ? number_format($ventas->total, 0, ',', '.') : null, ['class' => 'form-control', 'id' => 'total', 'readonly']) !!}
 </div>
 
 @includeIf('ventas.modal_producto')
 
 <!-- Js -->
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // comenzar la carga con document ready
         $(document).ready(function() {

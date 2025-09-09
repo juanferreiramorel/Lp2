@@ -80,7 +80,7 @@
             document.getElementById('selectedProducts').appendChild(row);
 
             // Calcular el total general según el detalle cargado
-            // total();
+            total();
 
             // Cerrar el modal después de seleccionar el producto
             $('#productSearchModal').modal('hide');

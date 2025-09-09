@@ -1,4 +1,4 @@
-<div class="card-body p-0">
+<div class="p-0 card-body">
     <div class="table-responsive">
         <table class="table" id="ventas-table">
             <thead>
@@ -27,7 +27,7 @@
                         <td>{{ number_format($venta->total, 0, ',', '.') }}</td>
                         <td>{{ $venta->usuario }}</td>
                         <td>
-                            <span class="float-right badge bg-success">
+                            <span class="badge bg-{{ $venta->estado == 'COMPLETADO' ? 'success' : 'danger' }}">
                                 {{ $venta->estado }}
                             </span>
                         </td>
@@ -37,14 +37,17 @@
                                 <a href="{{ route('ventas.show', [$venta->id_venta]) }}" class='btn btn-default btn-xs'>
                                     <i class="far fa-eye"></i>
                                 </a>
-                                <a href="{{ route('ventas.edit', [$venta->id_venta]) }}" class='btn btn-default btn-xs'>
-                                    <i class="far fa-edit"></i>
-                                </a>
-                                {!! Form::button('<i class="far fa-trash-alt"></i>', [
-                                    'type' => 'submit',
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'onclick' => "return confirm('Desea anular la venta?')",
-                                ]) !!}
+                                <!-- validacion para mostrar los botones de borrar y editar si la venta es anulada -->
+                                @if($venta->estado != 'ANULADO')
+                                    <a href="{{ route('ventas.edit', [$venta->id_venta]) }}" class='btn btn-default btn-xs'>
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                    {!! Form::button('<i class="far fa-trash-alt"></i>', [
+                                        'type' => 'submit',
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'onclick' => "return confirm('Desea anular la venta?')",
+                                    ]) !!}
+                                @endif
                             </div>
                             {!! Form::close() !!}
                         </td>
@@ -54,7 +57,7 @@
         </table>
     </div>
 
-    <div class="card-footer clearfix">
+    <div class="clearfix card-footer">
         <div class="float-right">
             {{-- @include('adminlte-templates::common.paginate', ['records' => $ventas]) --}}
         </div>

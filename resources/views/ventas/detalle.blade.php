@@ -34,9 +34,9 @@
                     <tbody id="selectedProducts">
                         <!-- Los productos seleccionados se agregarán aquí --> 
 
-                        <!-- si la funcion es editar preguntamos si existe la variable $det_venta -->
-                        @if (isset($det_venta))
-                            @foreach ($det_venta as $value)
+                        <!-- si la funcion es editar preguntamos si existe la variable $detalle_venta -->
+                        @if (isset($detalle_venta))
+                            @foreach ($detalle_venta as $value)
                             <tr>
                                 <td class="text-center">
                                     <input class="text-center form-control" type="text" name="codigo[]" readonly style="text-align: center"

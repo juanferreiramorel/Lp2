@@ -50,6 +50,38 @@
     </a>
 </li>
 
+<!-- Clientes -->
+<li class="nav-item {{ 
+    Request::is('reporte-cargos*') || 
+    Request::is('reporte-clientes*') ? 'menu-is-opening menu-open' : '' }}
+">
+    <a href="#" class="nav-link">
+        <i class="fas fa-cogs"></i>
+        <p>
+            Reportes
+            <i class="fas fa-angle-left right"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview" style="display: {{ 
+        Request::is('reporte-cargos*') ||
+        Request::is('reporte-clientes*')
+        ? 'block;' : 'none;' }};">
+        <li class="nav-item">
+            <a href="{{ url('reporte-cargos') }}" class="nav-link {{ Request::is('reporte-cargos*') ? 'active' : '' }}">
+                <i class="fas fa-address-card"></i>
+                <p>Reporte cargos</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('reporte-clientes') }}" class="nav-link {{ Request::is('reporte-clientes*') ? 'active' : '' }}">
+                <i class="fas fa-users"></i>
+                <p>Reporte clientes</p>
+            </a>
+        </li>
+    </ul>
+</li>
+
 <!-- Mostrar colapsado si esta en una de estas opciones del menú tanto en la etiqueta <li> y <ul> -->
 <li class="nav-item {{ 
     Request::is('users*') || 
