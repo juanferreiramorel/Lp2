@@ -20,7 +20,7 @@ class PedidosController extends Controller
                     u.name AS usuario
                FROM pedidos p
                JOIN clientes c ON p.id_cliente = c.id_cliente
-          LEFT JOIN users u   ON p.id_usuario = u.id
+            JOIN users u   ON p.id_usuario = u.id
            ORDER BY p.fecha_pedido DESC"
         );
 
@@ -136,7 +136,7 @@ class PedidosController extends Controller
                     u.name AS usuario
                FROM pedidos p
                JOIN clientes c ON p.id_cliente = c.id_cliente
-          LEFT JOIN users u   ON p.id_usuario = u.id
+               JOIN users u   ON p.id_usuario = u.id
               WHERE p.id_pedido = ?",
             [$id]
         );
@@ -150,7 +150,7 @@ class PedidosController extends Controller
         $detalle = DB::select(
             "SELECT d.*, pr.descripcion
                FROM detalle_pedido d
-          LEFT JOIN productos pr ON pr.id_producto = d.id_producto
+               JOIN productos pr ON pr.id_producto = d.id_producto
               WHERE d.id_pedido = ?",
             [$id]
         );
@@ -181,7 +181,7 @@ class PedidosController extends Controller
         $detalle = DB::select(
             "SELECT d.*, pr.descripcion
                FROM detalle_pedido d
-          LEFT JOIN productos pr ON pr.id_producto = d.id_producto
+               JOIN productos pr ON pr.id_producto = d.id_producto
               WHERE d.id_pedido = ?",
             [$id]
         );
