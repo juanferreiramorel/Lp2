@@ -4,10 +4,12 @@ create table pedidos(
     fecha_pedido date not null,
     total_pedido decimal(10, 2) not null,
     id_sucursal integer,
+    id_usuario integer,
     estado varchar(20) not null default 'PENDIENTE',
     primary key (id_pedido),
     foreign key (id_cliente) references clientes(id_cliente),
-    foreign key (id_sucursal) references sucursales(id_sucursal)
+    foreign key (id_sucursal) references sucursales(id_sucursal),
+    foreign key (id_usuario) references users(id)
 )
 
 create table detalle_pedido(
@@ -25,6 +27,9 @@ create table detalle_pedido(
 alter table ventas add column id_pedido integer;
 alter table ventas add foreign key (id_pedido) references pedidos(id_pedido);
 
+-- crear la columna en la tabla de users
+alter table pedidos add column id_usuario integer;
+alter table pedidos add foreign key (id_usuario) references users(id);
 
 -- Crear los formulario cabecera y detalle similar a ventas
 1. php artisan make:controller PedidosController
