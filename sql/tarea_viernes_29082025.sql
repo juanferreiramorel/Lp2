@@ -30,6 +30,9 @@ alter table ventas add foreign key (id_pedido) references pedidos(id_pedido);
 -- crear la columna en la tabla de users
 alter table pedidos add column id_usuario integer;
 alter table pedidos add foreign key (id_usuario) references users(id);
+-- crear la columna sucursales en la tabla de compras
+alter table compras add column id_sucursal integer;
+alter table compras add foreign key (id_sucursal) references sucursales(id_sucursal);
 
 -- Crear los formulario cabecera y detalle similar a ventas
 1. php artisan make:controller PedidosController

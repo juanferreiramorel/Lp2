@@ -258,20 +258,26 @@ class VentaController extends Controller
         $validacion = Validator::make(
             $input,
             [
+                'id_cliente' => 'required|exists:clientes,id_cliente',
                 'condicion_venta' => 'required|in:CONTADO,CREDITO',
                 'intervalo' => 'required_if:condicion_venta,CREDITO|in:0,7,15,30',
                 'cantidad_cuota' => 'required_if:condicion_venta,CREDITO|integer',
-                'id_sucursal' => 'required|exists:sucursales,id_sucursal',
+                'fecha_venta' => 'required|date',
+                'user_id' => 'required|exists:users,id'
             ],
             [
+                'id_cliente.required' => 'El campo cliente es obligatorio.',
+                'id_cliente.exists' => 'El cliente seleccionado no es válido.',
                 'condicion_venta.required' => 'El campo condición de venta es obligatorio.',
                 'condicion_venta.in' => 'La condición de venta seleccionada no es válida.',
                 'intervalo.required_if' => 'El campo intervalo es obligatorio cuando la condición de venta es crédito.',
                 'intervalo.in' => 'El intervalo seleccionado no es válido.',
                 'cantidad_cuota.required_if' => 'El campo cantidad de cuota es obligatorio cuando la condición de venta es crédito.',
                 'cantidad_cuota.integer' => 'El campo cantidad de cuota debe ser un número entero.',
-                'id_sucursal.required' => 'El campo sucursal es obligatorio.',
-                'id_sucursal.exists' => 'La sucursal seleccionada no es válida.',
+                'fecha_venta.required' => 'El campo fecha de venta es obligatorio.',
+                'fecha_venta.date' => 'El campo fecha de venta debe ser una fecha válida.',
+                'user_id.required' => 'El campo usuario es obligatorio.',
+                'user_id.exists' => 'El usuario seleccionado no es válido.'
             ]
         );
 
