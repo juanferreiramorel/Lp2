@@ -67,18 +67,24 @@
 <!-- Clientes -->
 <li class="nav-item {{ 
     Request::is('reporte-cargos*') || 
-    Request::is('reporte-clientes*') ? 'menu-is-opening menu-open' : '' }}
+    Request::is('reporte-clientes*') || 
+    Request::is('reporte-proveedores*') || 
+    Request::is('reporte-productos*') || 
+    Request::is('reporte-sucursales*') ? 'menu-is-opening menu-open' : '' }}
 ">
     <a href="#" class="nav-link">
-        <i class="fas fa-cogs"></i>
+        <i class="fas fa-chart-bar"></i>
         <p>
-            Reportes
             <i class="fas fa-angle-left right"></i>
+            Reportes
         </p>
     </a>
     <ul class="nav nav-treeview" style="display: {{ 
         Request::is('reporte-cargos*') ||
-        Request::is('reporte-clientes*')
+        Request::is('reporte-clientes*') ||
+        Request::is('reporte-proveedores*') ||
+        Request::is('reporte-productos*') ||
+        Request::is('reporte-sucursales*')
         ? 'block;' : 'none;' }};">
         <li class="nav-item">
             <a href="{{ url('reporte-cargos') }}" class="nav-link {{ Request::is('reporte-cargos*') ? 'active' : '' }}">
@@ -91,6 +97,27 @@
             <a href="{{ url('reporte-clientes') }}" class="nav-link {{ Request::is('reporte-clientes*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i>
                 <p>Reporte clientes</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('reporte-proveedores') }}" class="nav-link {{ Request::is('reporte-proveedores*') ? 'active' : '' }}">
+                <i class="fas fa-archive"></i>
+                <p>Reporte proveedores</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('reporte-productos') }}" class="nav-link {{ Request::is('reporte-productos*') ? 'active' : '' }}">
+                <i class="fas fa-box"></i>
+                <p>Reporte productos</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('reporte-sucursales') }}" class="nav-link {{ Request::is('reporte-sucursales*') ? 'active' : '' }}">
+                <i class="fas fa-building"></i>
+                <p>Reporte sucursales</p>
             </a>
         </li>
     </ul>

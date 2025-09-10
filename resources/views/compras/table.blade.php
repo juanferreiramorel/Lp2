@@ -24,10 +24,12 @@
             <td width="120">
               <div class="btn-group">
                 <a href="{{ route('compras.show', $compra->id_compra) }}" class="btn btn-default btn-xs" title="Ver"><i class="far fa-eye"></i></a>
-                <a href="{{ route('compras.edit', $compra->id_compra) }}" class="btn btn-info btn-xs" title="Editar"><i class="far fa-edit"></i></a>
-                {!! Form::open(['route' => ['compras.destroy', $compra->id_compra], 'method' => 'delete', 'style' => 'display:inline']) !!}
-                  {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('¿Anular esta compra?')"]) !!}
-                {!! Form::close() !!}
+                @if($compra->estado != 'ANULADO')
+                  <a href="{{ route('compras.edit', $compra->id_compra) }}" class="btn btn-info btn-xs" title="Editar"><i class="far fa-edit"></i></a>
+                  {!! Form::open(['route' => ['compras.destroy', $compra->id_compra], 'method' => 'delete', 'style' => 'display:inline']) !!}
+                    {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('¿Anular esta compra?')"]) !!}
+                  {!! Form::close() !!}
+                @endif
               </div>
             </td>
           </tr>

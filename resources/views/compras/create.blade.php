@@ -18,6 +18,7 @@
   @include('flash::message')
   <div class="card">
     <div class="card-body">
+      @include('adminlte-templates::common.errors')
       {!! Form::open(['route' => 'compras.store', 'id' => 'form-compra']) !!}
         <div class="row">
           @include('compras.fields')

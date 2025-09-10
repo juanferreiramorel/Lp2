@@ -17,6 +17,7 @@
 <div class="content px-3">
   <div class="card">
     <div class="card-body">
+       @include('adminlte-templates::common.errors')
       {!! Form::model($compra, ['route' => ['compras.update', $compra->id_compra], 'method' => 'patch', 'id' => 'form-compra']) !!}
         <div class="row">
           @include('compras.fields')

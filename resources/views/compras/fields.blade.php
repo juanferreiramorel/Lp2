@@ -72,11 +72,11 @@
 
 <!-- Cantidad cuota Field -->
 <div class="form-group col-sm-6" id="div-cantidad-cuota" style="display: none;">
-    {!! Form::label('cantidad_cuota', 'Cantidad Cuota:') !!}
-    {!! Form::number('cantidad_cuota', null, [
+    {!! Form::label('cantidad_cuotas', 'Cantidad Cuota:') !!}
+    {!! Form::number('cantidad_cuotas', null, [
         'class' => 'form-control',
         'placeholder' => 'Ingrese la cantidad de cuotas',
-        'id' => 'cantidad_cuota'
+        'id' => 'cantidad_cuotas'
     ]) !!}
 </div>
 
@@ -110,14 +110,14 @@
                     $("#div-cantidad-cuota").hide();
                     // prop es para asignar una propiedad al campo input y decirle no requerido
                     $("#intervalo").prop('required', false);
-                    $("#cantidad_cuota").prop('required', false);
+                    $("#cantidad_cuotas").prop('required', false);
                 } else {
                     //show es para mostrar
                     $("#div-intervalo").show(); 
                     $("#div-cantidad-cuota").show();
                     // prop es para asignar una propiedad al campo input y decirle es requerido
                     $("#intervalo").prop('required', true);
-                    $("#cantidad_cuota").prop('required', true);
+                    $("#cantidad_cuotas").prop('required', true);
                 }
             });
         });

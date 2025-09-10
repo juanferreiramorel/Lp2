@@ -49,10 +49,10 @@ class ComprasController extends Controller
             '30' => '30 Días'
         ];
         // Cantidad de intervalos (cuotas) 1..12
-        $cantidad_intervalo = [];
-        for ($i = 1; $i <= 12; $i++) { $cantidad_intervalo[(string)$i] = (string)$i; }
+        $cantidad_cuotas = [];
+        for ($i = 1; $i <= 12; $i++) { $cantidad_cuotas[(string)$i] = (string)$i; }
 
-        return view('compras.create', compact('proveedores','usuario','user_id','sucursales','condicion_compra','intervalo','cantidad_intervalo'));
+        return view('compras.create', compact('proveedores','usuario','user_id','sucursales','condicion_compra','intervalo','cantidad_cuotas'));
     }
 
     /** =============================
@@ -82,10 +82,9 @@ class ComprasController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-
         // Defaults para required_if
         $input['intervalo'] = $input['intervalo'] ?? 0;
-        $input['cantidad_intervalo'] = $input['cantidad_intervalo'] ?? 0;
+        $input['cantidad_cuotas'] = $input['cantidad_cuotas'] ?? 0;
 
         $validator = Validator::make($input, [
             'id_proveedor'        => 'required|exists:proveedores,id_proveedor',
@@ -97,7 +96,7 @@ class ComprasController extends Controller
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_intervalo'  => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36',
+            'cantidad_cuotas'      => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36',
 
             // detalle desde vista (igual que ventas): codigo[], cantidad[], precio[]
             'codigo'              => 'required|array|min:1',
@@ -119,10 +118,10 @@ class ComprasController extends Controller
             'condicion_compra.in'          => 'La condición no es válida.',
             'intervalo.required_if'        => 'El intervalo es obligatorio cuando es crédito.',
             'intervalo.in'                 => 'El intervalo debe ser 0, 7, 15 o 30.',
-            'cantidad_intervalo.required_if' => 'La cantidad de intervalos es obligatoria cuando es crédito.',
-            'cantidad_intervalo.integer'   => 'La cantidad de intervalos debe ser un número entero.',
-            'cantidad_intervalo.min'       => 'La cantidad de intervalos debe ser al menos 1.',
-            'cantidad_intervalo.max'       => 'La cantidad de intervalos no debe superar 36.',
+            'cantidad_cuotas.required_if' => 'La cantidad de intervalos es obligatoria cuando es crédito.',
+            'cantidad_cuotas.integer'   => 'La cantidad de intervalos debe ser un número entero.',
+            'cantidad_cuotas.min'       => 'La cantidad de intervalos debe ser al menos 1.',
+            'cantidad_cuotas.max'       => 'La cantidad de intervalos no debe superar 36.',
             'codigo.required'              => 'Debe agregar al menos un producto.'
         ]);
 
@@ -146,7 +145,7 @@ class ComprasController extends Controller
             // Si es contado, forzamos 0s en crédito
             if (($input['condicion_compra'] ?? 'CONTADO') === 'CONTADO') {
                 $input['intervalo'] = 0;
-                $input['cantidad_intervalo'] = 0;
+                $input['cantidad_cuotas'] = 0;
             }
 
             // Cabecera
@@ -159,12 +158,12 @@ class ComprasController extends Controller
                 'factura'             => $input['factura'] ?? null,
                 'condicion_compra'    => $input['condicion_compra'],
                 'intervalo'           => (int)$input['intervalo'],
-                'cantidad_intervalo'  => (int)$input['cantidad_intervalo'],
+                'cantidad_cuotas'  => (int)$input['cantidad_cuotas'],
             ], 'id_compra');
 
             // Detalle + AUMENTO de stock por sucursal
             foreach ($input['codigo'] as $i => $codigo) {
-                $monto = str_replace('.', '', $input['precio'][$i] ?? '0');
+                $monto = str_replace('.', '', $input['precio_unitario'][$i] ?? '0');
                 $cant  = (int)($input['cantidad'][$i] ?? 0);
 
                 DB::table('detalle_compras')->insert([
@@ -268,28 +267,28 @@ class ComprasController extends Controller
     {
         $input = $request->all();
         $input['intervalo'] = $input['intervalo'] ?? 0;
-        $input['cantidad_intervalo'] = $input['cantidad_intervalo'] ?? 0;
+        $input['cantidad_cuotas'] = $input['cantidad_cuotas'] ?? 0;
 
         $validator = Validator::make($input, [
             'id_proveedor'        => 'required|exists:proveedores,id_proveedor',
             'fecha_compra'        => 'required|date',
             'user_id'             => 'required|exists:users,id',
             'id_sucursal'         => 'required|exists:sucursales,id_sucursal',
-
+            
             'factura'             => 'nullable|string|max:20',
-
+            
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_intervalo'  => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36',
-
+            'cantidad_cuotas'      => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36',
+            
             'codigo'              => 'required|array|min:1',
             'codigo.*'            => 'required|integer',
             'cantidad'            => 'required|array|min:1',
             'cantidad.*'          => 'required|numeric|min:1',
-            'precio'              => 'required|array|min:1',
-            'precio.*'            => 'required',
+            'precio_unitario'              => 'required|array|min:1',
+            'precio_unitario.*'            => 'required',
         ]);
-
+        
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
@@ -300,6 +299,7 @@ class ComprasController extends Controller
         $detalleAnt = DB::table('detalle_compras')->where('id_compra', $id)->get();
         $mapAnt = [];
         foreach ($detalleAnt as $d) {
+            Log::error('Detalle actual: id_producto='.$d->id_producto.', cantidad='.$d->cantidad);
             $mapAnt[$d->id_producto] = ($mapAnt[$d->id_producto] ?? 0) + (int)$d->cantidad;
         }
 
@@ -319,7 +319,7 @@ class ComprasController extends Controller
             // Si es contado, forzamos 0s
             if (($input['condicion_compra'] ?? 'CONTADO') === 'CONTADO') {
                 $input['intervalo'] = 0;
-                $input['cantidad_intervalo'] = 0;
+                $input['cantidad_cuotas'] = 0;
             }
 
             // Ajustar stock por diferencia
@@ -345,13 +345,13 @@ class ComprasController extends Controller
                 'factura'             => $input['factura'] ?? null,
                 'condicion_compra'    => $input['condicion_compra'],
                 'intervalo'           => (int)$input['intervalo'],
-                'cantidad_intervalo'  => (int)$input['cantidad_intervalo'],
+                'cantidad_cuotas'  => (int)$input['cantidad_cuotas'],
             ]);
 
             // Reemplazar detalle (simplifica; alternativamente upsert)
             DB::table('detalle_compras')->where('id_compra', $id)->delete();
             foreach ($input['codigo'] as $i => $codigo) {
-                $monto = $this->normalizeNumber($input['precio'][$i] ?? 0);
+                $monto = $this->normalizeNumber($input['precio_unitario'][$i] ?? 0);
                 $cant  = (int)($input['cantidad'][$i] ?? 0);
                 DB::table('detalle_compras')->insert([
                     'id_compra'       => $id,

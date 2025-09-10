@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Reporte de Cargos</h1>
+                    <h1>Reporte de Sucursales</h1>
                 </div>
             </div>
         </div>
@@ -19,7 +19,7 @@
                 <h3>Filtros</h3>
                 <div class="row">
                     <div class="form-group col-sm-3">
-                        {!! Form::label('desde', 'Codigo Desde:') !!}
+                        {!! Form::label('desde', 'Código Desde:') !!}
                         {!! Form::text('desde', request()->get('desde', null), [
                             'class' => 'form-control',
                             'placeholder' => 'Ingrese el código',
@@ -28,7 +28,7 @@
                     </div>
 
                     <div class="form-group col-sm-3">
-                        {!! Form::label('hasta', 'Codigo Hasta:') !!}
+                        {!! Form::label('hasta', 'Código Hasta:') !!}
                         {!! Form::text('hasta', request()->get('hasta', null), [
                             'class' => 'form-control',
                             'placeholder' => 'Ingrese el código',
@@ -42,8 +42,8 @@
                             <i class="fas fa fa-search"></i>
                         </button>
 
-                        <button class="btn btn-default" type="button" data-toggle="tooltip" title="Limpiar" id="btn-limpiar"
-                            style="margin-top:32px">
+                        <button class="btn btn-default" type="button" data-toggle="tooltip" title="Limpiar"
+                            id="btn-limpiar" style="margin-top:32px">
                             <i class="fas fa fa-eraser"></i>
                         </button>
 
@@ -60,18 +60,24 @@
         <div class="card">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table" id="cargos-table">
+                    <table class="table" id="sucursales-table">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Descripcion</th>
+                                <th>Descripción</th>
+                                <th>Dirección</th>
+                                <th>Teléfono</th>
+                                <th>Ciudad</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($cargos as $cargo)
+                            @foreach ($sucursales as $sucursal)
                                 <tr>
-                                    <td>{{ $cargo->id_cargo }}</td>
-                                    <td>{{ $cargo->descripcion }}</td>
+                                    <td>{{ $sucursal->id_sucursal }}</td>
+                                    <td>{{ $sucursal->descripcion }}</td>
+                                    <td>{{ $sucursal->direccion }}</td>
+                                    <td>{{ $sucursal->telefono }}</td>
+                                    <td>{{ $sucursal->ciudad }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -83,33 +89,32 @@
 @endsection
 
 @push('scripts')
-    <!-- Corrección: Eliminar espacios en la URL -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
         $(document).ready(function() {
             // Inicializar tooltips
             $('[data-toggle="tooltip"]').tooltip();
-            
+
             // Botón de consulta
             $('#btn-consultar').click(function(e) {
                 e.preventDefault();
-                window.location.href = '{{ url('reporte-cargos') }}?desde=' + $('#desde').val() +
+                window.location.href = '{{ url('reporte-sucursales') }}?desde=' + $('#desde').val() +
                     '&hasta=' + $('#hasta').val();
             });
-            
+
             // Botón de exportación
             $('#btn-exportar').click(function(e) {
                 e.preventDefault();
-                window.open('{{ url('reporte-cargos') }}?desde=' + $('#desde').val() + '&exportar=pdf', '_blank');
+                window.open('{{ url('reporte-sucursales') }}?desde=' + $('#desde').val() + '&hasta=' + $(
+                    '#hasta').val() + '&exportar=pdf', '_blank');
             });
-            
-            // Botón de limpieza (CORREGIDO: dentro de document.ready)
+
+            // Botón de limpieza
             $('#btn-limpiar').click(function(e) {
                 e.preventDefault();
                 $('#desde').val('');
                 $('#hasta').val('');
-                window.location.href = '{{ url('reporte-cargos') }}';
+                window.location.href = '{{ url('reporte-sucursales') }}';
             });
         });
     </script>

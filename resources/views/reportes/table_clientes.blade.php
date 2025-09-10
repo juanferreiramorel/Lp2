@@ -1,4 +1,4 @@
-<table class="table tabla table-bordered" id="clientes-table">
+<table class="table tabla table-bordered" id="cargos-table">
     <thead>
         <tr>
             <th>#</th>
