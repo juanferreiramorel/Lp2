@@ -17,6 +17,12 @@
   ]) !!}
 </div>
 
+<!-- Factura Nro Field -->
+<div class="form-group col-sm-3">
+    {!! Form::label('factura', 'Factura Nro:') !!}
+    {!! Form::text('factura', null, ['class' => 'form-control']) !!}
+</div>
+
 <!-- Usuario (solo visual) -->
 <div class="form-group col-sm-3">
   {!! Form::label('usuario', 'Usuario:') !!}
@@ -34,14 +40,44 @@
   ]) !!}
 </div>
 
-{{-- sucursal --}}
-<div class="form-group col-sm-3">
-  {!! Form::label('id_sucursal', 'Sucursal:') !!}
-  {!! Form::select('id_sucursal', $sucursales ?? [], isset($compra) ? $compra->id_sucursal : null, [
-      'class' => 'form-control',
-      'placeholder' => 'Seleccione...',
-      'required'
-  ]) !!}
+<!-- Condicion venta Field -->
+<div class="form-group col-sm-4">
+    {!! Form::label('condicion_compra', 'Condición de Compra:') !!}
+    {!! Form::select('condicion_compra', $condicion_compra, null, [
+        'class' => 'form-control',
+        'id' => 'condicion_compra',
+        'required',
+    ]) !!}
+</div>
+
+<!-- sucursal -->
+<div class="form-group col-sm-4">
+    {!! Form::label('id_sucursal', 'Sucursal:') !!}
+    {!! Form::select('id_sucursal', $sucursales, null, [
+        'class' => 'form-control',
+        'id' => 'id_sucursal',
+        'required',
+    ]) !!}
+</div>
+
+<!-- Intervalo de Vencimiento Field -->
+<div class="form-group col-sm-6" id="div-intervalo" style="display: none;"> 
+    {!! Form::label('intervalo', 'Intervalo de Vencimiento:') !!}
+    {!! Form::select('intervalo', $intervalo, null, [
+        'class' => 'form-control',
+        'placeholder' => 'Seleccione un intervalo',
+        'id' => 'intervalo'
+    ]) !!}
+</div>
+
+<!-- Cantidad cuota Field -->
+<div class="form-group col-sm-6" id="div-cantidad-cuota" style="display: none;">
+    {!! Form::label('cantidad_cuota', 'Cantidad Cuota:') !!}
+    {!! Form::number('cantidad_cuota', null, [
+        'class' => 'form-control',
+        'placeholder' => 'Ingrese la cantidad de cuotas',
+        'id' => 'cantidad_cuota'
+    ]) !!}
 </div>
 
 @includeIf('compras.modal_producto')
@@ -64,6 +100,25 @@
                     .catch(error => {
                         console.error('Error:', error); // mostrar error en consola
                     });
+            });
+            // Ocultar o mostra campos segun seleccion de condicion de compra
+            $("#condicion_compra").on("change", function() {
+                var condicion_compra = $(this).val();// es capturar el dato selecciona con this.val()
+                if(condicion_compra == 'CONTADO') {
+                    //hide es para ocultar
+                    $("#div-intervalo").hide();
+                    $("#div-cantidad-cuota").hide();
+                    // prop es para asignar una propiedad al campo input y decirle no requerido
+                    $("#intervalo").prop('required', false);
+                    $("#cantidad_cuota").prop('required', false);
+                } else {
+                    //show es para mostrar
+                    $("#div-intervalo").show(); 
+                    $("#div-cantidad-cuota").show();
+                    // prop es para asignar una propiedad al campo input y decirle es requerido
+                    $("#intervalo").prop('required', true);
+                    $("#cantidad_cuota").prop('required', true);
+                }
             });
         });
     </script>

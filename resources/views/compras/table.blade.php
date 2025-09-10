@@ -16,11 +16,7 @@
           <tr>
             <td>{{ $compra->id_compra }}</td>
             <td>
-              @if(isset($compra->proveedor))
-                {{ $compra->proveedor->nombre ?? $compra->proveedor->razon_social ?? '—' }}
-              @else
                 {{ $compra->proveedor ?? $compra->id_proveedor }}
-              @endif
             </td>
             <td>{{ \Carbon\Carbon::parse($compra->fecha_compra)->format('d/m/Y') }}</td>
             <td>{{ $compra->usuario ?? ($compra->user_name ?? '') }}</td>

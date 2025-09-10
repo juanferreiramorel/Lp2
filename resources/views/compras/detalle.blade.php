@@ -46,7 +46,7 @@
                                     <input type="text" class="form-control" name="producto[]" readonly
                                         placeholder="Buscar productos" value="{!! $value->descripcion !!}">
                                     {!! Form::hidden('id_producto[]', $value->id_producto) !!}
-                                    {!! Form::hidden('id_det_pedido[]', $value->id_detalle_pedido) !!}
+                                    {!! Form::hidden('id_det_compra[]', $value->id_detalle_compra) !!}
                                 </td>
                             
                                 <td class="text-center">
