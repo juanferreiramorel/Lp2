@@ -28,7 +28,6 @@
                             </span>
                         </td>
                         <td style="width: 120px">
-                            {!! Form::open(['route' => ['pedidos.destroy', $pedido->id_pedido], 'method' => 'delete']) !!}
                             <div class='btn-group'>
                                 <a href="{{ route('pedidos.show', [$pedido->id_pedido]) }}" class='btn btn-default btn-xs'>
                                     <i class="far fa-eye"></i>
@@ -38,14 +37,12 @@
                                     <a href="{{ route('pedidos.edit', [$pedido->id_pedido]) }}" class='btn btn-default btn-xs'>
                                         <i class="far fa-edit"></i>
                                     </a>
-                                    {!! Form::button('<i class="far fa-trash-alt"></i>', [
-                                        'type' => 'submit',
-                                        'class' => 'btn btn-danger btn-xs',
-                                        'onclick' => "return confirm('Desea anular la pedido?')",
-                                    ]) !!}
+                                    <button type="button" class="btn btn-danger btn-xs"
+                                        onclick="openGlobalDeleteModal('{{ route('pedidos.destroy', $pedido->id_pedido) }}', '¿Deseas dar de baja este pedido?')">
+                                        <i class="far fa-trash-alt"></i>
+                                    </button>
                                 @endif
                             </div>
-                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach

@@ -14,7 +14,6 @@
                         <td>{{ $departamento->id_departamento }}</td>
                         <td>{{ $departamento->descripcion }}</td>
                         <td style="width: 120px">
-                            {!! Form::open(['route' => ['departamentos.destroy', $departamento->id_departamento], 'method' => 'delete']) !!}
                             <div class='btn-group'>
                                 <a href="{{ route('departamentos.edit', [$departamento->id_departamento]) }}"
                                     class='btn btn-default btn-xs'>
@@ -25,7 +24,6 @@
                                     <i class="far fa-trash-alt"></i>
                                 </button>
                             </div>
-                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach

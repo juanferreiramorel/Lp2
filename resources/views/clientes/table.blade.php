@@ -24,19 +24,16 @@
                         <td>{{ \Carbon\Carbon::parse($cliente->clie_fecha_nac)->format('d/m/Y') ?? null }}</td>
                         <td>{{ $cliente->departamento }}</td>
                         <td style="width: 120px">
-                            {!! Form::open(['route' => ['clientes.destroy', $cliente->id_cliente], 'method' => 'delete']) !!}
                             <div class='btn-group'>
                                 <a href="{{ route('clientes.edit', [$cliente->id_cliente]) }}"
                                     class='btn btn-default btn-xs'>
                                     <i class="far fa-edit"></i>
                                 </a>
-                                {!! Form::button('<i class="far fa-trash-alt"></i>', [
-                                    'type' => 'submit',
-                                    'class' => 'btn btn-danger btn-xs',
-                                    'onclick' => "return confirm('Desea eliminar el registro?')",
-                                ]) !!}
+                                <button type="button" class="btn btn-danger btn-xs"
+                                    onclick="openGlobalDeleteModal('{{ route('clientes.destroy', $cliente->id_cliente) }}', '¿Deseas dar de baja este cliente?')">
+                                    <i class="far fa-trash-alt"></i>
+                                </button>
                             </div>
-                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach
