@@ -85,7 +85,7 @@ class ComprasController extends Controller
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
+            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36', // CORREGIDO: min:0 a min:1
 
             // detalle desde vista (igual que ventas): codigo[], cantidad[], precio[]
             'codigo'              => 'required|array|min:1',
@@ -259,7 +259,7 @@ class ComprasController extends Controller
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
+            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36', // CORREGIDO: min:0 a min:1
 
             'codigo'              => 'required|array|min:1',
             'codigo.*'            => 'required|integer',
