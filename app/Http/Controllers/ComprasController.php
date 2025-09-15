@@ -10,9 +10,6 @@ use Laracasts\Flash\Flash;
 
 class ComprasController extends Controller
 {
-    /** =============================
-     *  LISTADO
-     *  ============================= */
     public function index()
     {
         // Incluimos sucursal y usuario para mostrar en la tabla
@@ -30,10 +27,7 @@ class ComprasController extends Controller
 
         return view('compras.index', compact('compras'));
     }
-
-    /** =============================
-     *  CREAR
-     *  ============================= */
+    
     public function create()
     {
         $proveedores = $this->kvProveedores(); // [id_proveedor => descripcion]
@@ -50,14 +44,13 @@ class ComprasController extends Controller
         ];
         // Cantidad de intervalos (cuotas) 1..12
         $cantidad_cuotas = [];
-        for ($i = 1; $i <= 12; $i++) { $cantidad_cuotas[(string)$i] = (string)$i; }
+        for ($i = 1; $i <= 12; $i++) {
+            $cantidad_cuotas[(string)$i] = (string)$i;
+        }
 
-        return view('compras.create', compact('proveedores','usuario','user_id','sucursales','condicion_compra','intervalo','cantidad_cuotas'));
+        return view('compras.create', compact('proveedores', 'usuario', 'user_id', 'sucursales', 'condicion_compra', 'intervalo', 'cantidad_cuotas'));
     }
-
-    /** =============================
-     *  BUSCADOR AJAX DE PRODUCTOS
-     *  ============================= */
+    
     public function buscarProducto(Request $request)
     {
         $buscar = trim((string)$request->get('query', ''));
@@ -74,11 +67,7 @@ class ComprasController extends Controller
 
         return view('compras.body_producto')->with('productos', $productos);
     }
-
-
-    /** =============================
-     *  GUARDAR
-     *  ============================= */
+    
     public function store(Request $request)
     {
         $input = $request->all();
@@ -96,7 +85,7 @@ class ComprasController extends Controller
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'      => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36',
+            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
 
             // detalle desde vista (igual que ventas): codigo[], cantidad[], precio[]
             'codigo'              => 'required|array|min:1',
@@ -118,10 +107,10 @@ class ComprasController extends Controller
             'condicion_compra.in'          => 'La condición no es válida.',
             'intervalo.required_if'        => 'El intervalo es obligatorio cuando es crédito.',
             'intervalo.in'                 => 'El intervalo debe ser 0, 7, 15 o 30.',
-            'cantidad_cuotas.required_if' => 'La cantidad de intervalos es obligatoria cuando es crédito.',
-            'cantidad_cuotas.integer'   => 'La cantidad de intervalos debe ser un número entero.',
-            'cantidad_cuotas.min'       => 'La cantidad de intervalos debe ser al menos 1.',
-            'cantidad_cuotas.max'       => 'La cantidad de intervalos no debe superar 36.',
+            'cantidad_cuotas.required_if'  => 'La cantidad de cuotas es obligatoria cuando es crédito.',
+            'cantidad_cuotas.integer'      => 'La cantidad de cuotas debe ser un número entero.',
+            'cantidad_cuotas.min'          => 'La cantidad de cuotas debe ser al menos 1 cuando es crédito.', // CORREGIDO
+            'cantidad_cuotas.max'          => 'La cantidad de cuotas no debe superar 36.',
             'codigo.required'              => 'Debe agregar al menos un producto.'
         ]);
 
@@ -158,7 +147,7 @@ class ComprasController extends Controller
                 'factura'             => $input['factura'] ?? null,
                 'condicion_compra'    => $input['condicion_compra'],
                 'intervalo'           => (int)$input['intervalo'],
-                'cantidad_cuotas'  => (int)$input['cantidad_cuotas'],
+                'cantidad_cuotas'     => (int)$input['cantidad_cuotas'],
             ], 'id_compra');
 
             // Detalle + AUMENTO de stock por sucursal
@@ -182,14 +171,11 @@ class ComprasController extends Controller
             return redirect()->route('compras.index');
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error en compras.store: '.$e->getMessage());
+            Log::error('Error en compras.store: ' . $e->getMessage());
             return back()->withErrors(['db' => $e->getMessage()])->withInput();
         }
     }
-
-    /** =============================
-     *  VER
-     *  ============================= */
+    
     public function show($id)
     {
         $compra = DB::selectOne(
@@ -219,10 +205,7 @@ class ComprasController extends Controller
 
         return view('compras.show', compact('compra'))->with('detalles', $detalles);
     }
-
-    /** =============================
-     *  EDITAR
-     *  ============================= */
+    
     public function edit($id)
     {
         $compra = DB::selectOne("SELECT c.*, descripcion AS sucursal FROM compras c JOIN sucursales USING(id_sucursal)   WHERE id_compra = ?", [$id]);
@@ -245,7 +228,7 @@ class ComprasController extends Controller
             '30' => '30 Días'
         ];
 
-         // Enviar datos de sucursales
+        // Enviar datos de sucursales
         $sucursales = DB::table('sucursales')->pluck('descripcion', 'id_sucursal');
 
         $detalles = DB::select(
@@ -256,13 +239,10 @@ class ComprasController extends Controller
             [$id]
         );
 
-        return view('compras.edit', compact('compra','proveedores','usuario','user_id','intervalo','condicion_compra','sucursales'))
+        return view('compras.edit', compact('compra', 'proveedores', 'usuario', 'user_id', 'intervalo', 'condicion_compra', 'sucursales'))
             ->with('detalles', $detalles);
     }
-
-    /** =============================
-     *  ACTUALIZAR
-     *  ============================= */
+    
     public function update(Request $request, $id)
     {
         $input = $request->all();
@@ -274,21 +254,39 @@ class ComprasController extends Controller
             'fecha_compra'        => 'required|date',
             'user_id'             => 'required|exists:users,id',
             'id_sucursal'         => 'required|exists:sucursales,id_sucursal',
-            
+
             'factura'             => 'nullable|string|max:20',
-            
+
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'      => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36',
-            
+            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
+
             'codigo'              => 'required|array|min:1',
             'codigo.*'            => 'required|integer',
             'cantidad'            => 'required|array|min:1',
             'cantidad.*'          => 'required|numeric|min:1',
-            'precio_unitario'              => 'required|array|min:1',
-            'precio_unitario.*'            => 'required',
+            'precio_unitario'     => 'required|array|min:1',
+            'precio_unitario.*'   => 'required',
+        ], [
+            'id_proveedor.required'        => 'El proveedor es obligatorio.',
+            'id_proveedor.exists'          => 'El proveedor no es válido.',
+            'fecha_compra.required'        => 'La fecha es obligatoria.',
+            'fecha_compra.date'            => 'La fecha no es válida.',
+            'user_id.required'             => 'El usuario es obligatorio.',
+            'user_id.exists'               => 'El usuario no es válido.',
+            'id_sucursal.required'         => 'La sucursal es obligatoria.',
+            'id_sucursal.exists'           => 'La sucursal no es válida.',
+            'condicion_compra.required'    => 'La condición es obligatoria.',
+            'condicion_compra.in'          => 'La condición no es válida.',
+            'intervalo.required_if'        => 'El intervalo es obligatorio cuando es crédito.',
+            'intervalo.in'                 => 'El intervalo debe ser 0, 7, 15 o 30.',
+            'cantidad_cuotas.required_if'  => 'La cantidad de cuotas es obligatoria cuando es crédito.',
+            'cantidad_cuotas.integer'      => 'La cantidad de cuotas debe ser un número entero.',
+            'cantidad_cuotas.min'          => 'La cantidad de cuotas debe ser al menos 1 cuando es crédito.', // CORREGIDO
+            'cantidad_cuotas.max'          => 'La cantidad de cuotas no debe superar 36.',
+            'codigo.required'              => 'Debe agregar al menos un producto.'
         ]);
-        
+
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
@@ -299,7 +297,7 @@ class ComprasController extends Controller
         $detalleAnt = DB::table('detalle_compras')->where('id_compra', $id)->get();
         $mapAnt = [];
         foreach ($detalleAnt as $d) {
-            Log::error('Detalle actual: id_producto='.$d->id_producto.', cantidad='.$d->cantidad);
+            Log::error('Detalle actual: id_producto=' . $d->id_producto . ', cantidad=' . $d->cantidad);
             $mapAnt[$d->id_producto] = ($mapAnt[$d->id_producto] ?? 0) + (int)$d->cantidad;
         }
 
@@ -345,7 +343,7 @@ class ComprasController extends Controller
                 'factura'             => $input['factura'] ?? null,
                 'condicion_compra'    => $input['condicion_compra'],
                 'intervalo'           => (int)$input['intervalo'],
-                'cantidad_cuotas'  => (int)$input['cantidad_cuotas'],
+                'cantidad_cuotas'     => (int)$input['cantidad_cuotas'],
             ]);
 
             // Reemplazar detalle (simplifica; alternativamente upsert)
@@ -366,14 +364,11 @@ class ComprasController extends Controller
             return redirect()->route('compras.show', $id);
         } catch (\Throwable $e) {
             DB::RollBack();
-            Log::error('Error en compras.update: '.$e->getMessage());
+            Log::error('Error en compras.update: ' . $e->getMessage());
             return back()->withErrors(['db' => $e->getMessage()])->withInput();
         }
     }
-
-    /** =============================
-     *  ELIMINAR / ANULAR
-     *  ============================= */
+    
     public function destroy($id)
     {
         // Si anulas compras, probablemente debas revertir el stock
@@ -401,17 +396,13 @@ class ComprasController extends Controller
             Flash::success('Compra anulada y stock revertido.');
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Error en compras.destroy: '.$e->getMessage());
+            Log::error('Error en compras.destroy: ' . $e->getMessage());
             return back()->withErrors(['db' => $e->getMessage()]);
         }
 
         return redirect()->route('compras.index');
     }
-
-    /** =============================
-     *  HELPERS
-     *  ============================= */
-
+    
     private function kvProveedores(): array
     {
         try {
@@ -456,7 +447,7 @@ class ComprasController extends Controller
                 DB::table('stocks')->where([
                     'id_producto' => $idProducto,
                     'id_sucursal' => $idSucursal,
-                ])->update([ 'cantidad' => ((int)$row->cantidad) + $cantidad ]);
+                ])->update(['cantidad' => ((int)$row->cantidad) + $cantidad]);
             } else {
                 DB::table('stocks')->insert([
                     'id_producto' => $idProducto,
@@ -467,9 +458,9 @@ class ComprasController extends Controller
         } else {
             $row = DB::table('stocks')->where('id_producto', $idProducto)->first();
             if ($row) {
-                DB::table('stocks')->where('id_producto', $idProducto)->update([ 'cantidad' => ((int)$row->cantidad) + $cantidad ]);
+                DB::table('stocks')->where('id_producto', $idProducto)->update(['cantidad' => ((int)$row->cantidad) + $cantidad]);
             } else {
-                DB::table('stocks')->insert([ 'id_producto' => $idProducto, 'cantidad' => $cantidad ]);
+                DB::table('stocks')->insert(['id_producto' => $idProducto, 'cantidad' => $cantidad]);
             }
         }
     }
@@ -497,13 +488,13 @@ class ComprasController extends Controller
                 DB::table('stocks')->where([
                     'id_producto' => $idProducto,
                     'id_sucursal' => $idSucursal,
-                ])->update([ 'cantidad' => $newQty ]);
+                ])->update(['cantidad' => $newQty]);
             }
         } else {
             $row = DB::table('stocks')->where('id_producto', $idProducto)->first();
             if ($row) {
                 $newQty = max(0, ((int)$row->cantidad) - $cantidad);
-                DB::table('stocks')->where('id_producto', $idProducto)->update([ 'cantidad' => $newQty ]);
+                DB::table('stocks')->where('id_producto', $idProducto)->update(['cantidad' => $newQty]);
             }
         }
     }

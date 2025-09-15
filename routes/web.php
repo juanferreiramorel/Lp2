@@ -56,6 +56,12 @@ Route::get('pdf', [App\Http\Controllers\VentaController::class, 'pdf']);
 Route::get('reporte-cargos', [App\Http\Controllers\ReporteController::class, 'rpt_cargos']);
 ## Ruta reporte cliente
 Route::get('reporte-clientes', [App\Http\Controllers\ReporteController::class, 'rpt_clientes']);
+## Ruta reporte proveedor
+Route::get('reporte-proveedores', [App\Http\Controllers\ReporteController::class, 'rpt_proveedores']);
+## Ruta reporte producto
+Route::get('reporte-productos', [App\Http\Controllers\ReporteController::class, 'rpt_productos']);
+## Ruta reporte sucursal
+Route::get('reporte-sucursales', [App\Http\Controllers\ReporteController::class, 'rpt_sucursales']);
 ## Rutas para compras
 Route::resource('compras', App\Http\Controllers\ComprasController::class);
 

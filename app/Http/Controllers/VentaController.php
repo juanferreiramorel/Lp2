@@ -103,6 +103,8 @@ class VentaController extends Controller
         // Agregar transacciones
         DB::beginTransaction();
         try {
+             $totalLimpio = str_replace('.', '', $input['total'] ?? '0');
+
             $ventas = DB::table('ventas')->insertGetId([
                 'id_cliente' => $input['id_cliente'],
                 'condicion_venta' => $input['condicion_venta'],
@@ -111,10 +113,10 @@ class VentaController extends Controller
                 'fecha_venta' => $input['fecha_venta'],
                 'factura_nro' => $input['factura_nro'] ?? '0',
                 'user_id' => $user_id,
-                'total' => $input['total'] ?? 0,
+                'total' => $totalLimpio,  // <-- USAMOS EL VALOR LIMPIO SIN PUNTOS
                 'id_sucursal' => $input['id_sucursal'],
                 'estado' => 'COMPLETADO'
-            ], 'id_venta');
+           ],'id_venta');
 
             // insertar detalle ventas
             $subtotal = 0;
@@ -253,31 +255,27 @@ class VentaController extends Controller
             Flash::error('Venta no encontrada');
             return redirect()->route('ventas.index');
         }
+        $input['intervalo'] = $input['intervalo'] ?? 0;
+        $input['cantidad_cuota'] = $input['cantidad_cuota'] ?? 0;
 
         // Validaciones personalizadas para el formulario ventas
         $validacion = Validator::make(
             $input,
             [
-                'id_cliente' => 'required|exists:clientes,id_cliente',
                 'condicion_venta' => 'required|in:CONTADO,CREDITO',
                 'intervalo' => 'required_if:condicion_venta,CREDITO|in:0,7,15,30',
                 'cantidad_cuota' => 'required_if:condicion_venta,CREDITO|integer',
-                'fecha_venta' => 'required|date',
-                'user_id' => 'required|exists:users,id'
+                'id_sucursal' => 'required|exists:sucursales,id_sucursal',
             ],
             [
-                'id_cliente.required' => 'El campo cliente es obligatorio.',
-                'id_cliente.exists' => 'El cliente seleccionado no es válido.',
                 'condicion_venta.required' => 'El campo condición de venta es obligatorio.',
                 'condicion_venta.in' => 'La condición de venta seleccionada no es válida.',
                 'intervalo.required_if' => 'El campo intervalo es obligatorio cuando la condición de venta es crédito.',
                 'intervalo.in' => 'El intervalo seleccionado no es válido.',
                 'cantidad_cuota.required_if' => 'El campo cantidad de cuota es obligatorio cuando la condición de venta es crédito.',
                 'cantidad_cuota.integer' => 'El campo cantidad de cuota debe ser un número entero.',
-                'fecha_venta.required' => 'El campo fecha de venta es obligatorio.',
-                'fecha_venta.date' => 'El campo fecha de venta debe ser una fecha válida.',
-                'user_id.required' => 'El campo usuario es obligatorio.',
-                'user_id.exists' => 'El usuario seleccionado no es válido.'
+                'id_sucursal.required' => 'El campo sucursal es obligatorio.',
+                'id_sucursal.exists' => 'La sucursal seleccionada no es válida.',
             ]
         );
 
@@ -287,12 +285,14 @@ class VentaController extends Controller
 
         DB::beginTransaction();
         try {
+            $totalLimpio = str_replace('.', '', $input['total'] ?? 0); 
             // Actualizar la venta
-            DB::update('UPDATE ventas SET condicion_venta = ?, intervalo = ?, cantidad_cuota = ?, id_sucursal = ? WHERE id_venta = ?', [
+            DB::update('UPDATE ventas SET condicion_venta = ?, intervalo = ?, cantidad_cuota = ?, id_sucursal = ?, total = ? WHERE id_venta = ?', [
                 $input['condicion_venta'],
                 $input['intervalo'],
                 $input['cantidad_cuota'],
                 $input['id_sucursal'],
+                $totalLimpio,
                 $id
             ]);
 
