@@ -61,4 +61,4 @@ Route::resource('permissions', App\Http\Controllers\PermissionController::class)
 Route::resource('roles', App\Http\Controllers\RoleController::class);
 
 // Apertura y cierre de caja
-Route::post('apertura_cierre_cajas', [App\Http\Controllers\AperturaCierreCajaController::class, 'store']);
+Route::resource('apertura-cierre-caja', App\Http\Controllers\AperturaCierreCajaController::class);

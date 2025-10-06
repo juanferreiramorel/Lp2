@@ -20,7 +20,7 @@
             
             <div class="table-responsive">
                 <br>
-                <table class="table item-table">
+                <table class="table item-table detalle-venta">
                     <thead>
                         <tr>
                             <th style="width:12%;">#</th>

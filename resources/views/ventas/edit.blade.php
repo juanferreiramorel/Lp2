@@ -6,7 +6,7 @@
             <div class="mb-2 row">
                 <div class="col-sm-12">
                     <h1>
-                        Editar Ventas
+                        Edit Ventas
                     </h1>
                 </div>
             </div>
@@ -16,6 +16,7 @@
     <div class="px-3 content">
 
         @include('adminlte-templates::common.errors')
+        @include('sweetalert::alert')
 
         <div class="card">
 

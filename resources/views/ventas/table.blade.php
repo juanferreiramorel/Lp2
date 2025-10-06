@@ -44,8 +44,8 @@
                                     </a>
                                     {!! Form::button('<i class="far fa-trash-alt"></i>', [
                                         'type' => 'submit',
-                                        'class' => 'btn btn-danger btn-xs alert-delete',
-                                        'data-mensaje' => $venta->id_venta,
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'onclick' => "return confirm('Desea anular la venta?')",
                                     ]) !!}
                                 @endif
                             </div>
