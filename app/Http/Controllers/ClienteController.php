@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Laracasts\Flash\Flash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ClienteController extends Controller
 {
@@ -66,20 +66,20 @@ class ClienteController extends Controller
         ##validar edad del cliente
         $edad = $fec_actual->diffInYears($fecha_nac);
         if ($edad < 18) {
-            Flash::error('El cliente debe ser mayor de 18 años.');
+            Alert::error('Error', 'El cliente debe ser mayor de 18 años.');
             return redirect(route('clientes.create'))->withInput();
         }
 
         ## validar fecha mayor al actual
         if ($fecha_nac > $fec_actual) {
-            Flash::error('La fecha de nacimiento no puede ser mayor a la fecha actual.');
+            Alert::error('Error', 'La fecha de nacimiento no puede ser mayor a la fecha actual.');
             return redirect(route('clientes.create'))->withInput();
         }
 
         ##validar cantidad de digitos del campo ci
         $ci = strlen($input['clie_ci']); // utilizar strlen para contar caracteres
         if ($ci > 8) {# mayor a 8 caracteres
-            Flash::error('El nro de cedula solo podra contener 8 digítos.');
+            Alert::error('Error', 'El nro de cedula solo podra contener 8 digítos.');
             return redirect(route('clientes.create'))->withInput();
         }
 
@@ -95,7 +95,7 @@ class ClienteController extends Controller
             $input['id_ciudad']
         ]);
 
-        Flash::success('Cliente creado correctamente.');
+        Alert::success('Éxito', 'Cliente creado correctamente.');
 
         return redirect(route('clientes.index'));
 
@@ -107,7 +107,7 @@ class ClienteController extends Controller
         $clientes = DB::selectOne('SELECT * FROM clientes WHERE id_cliente = ?', [$id]);
 
         if (empty($clientes)) {
-            Flash::error('Cliente no encontrado.');
+            Alert::error('Error', 'Cliente no encontrado.');
             return redirect(route('clientes.index'));
         }
 
@@ -127,7 +127,7 @@ class ClienteController extends Controller
         $clientes = DB::selectOne('SELECT * FROM clientes WHERE id_cliente = ?', [$id]);
 
         if (empty($clientes)) {
-            Flash::error('Cliente no encontrado.');
+            Alert::error('Error', 'Cliente no encontrado.');
             return redirect(route('clientes.index'));
         }
 
@@ -160,27 +160,27 @@ class ClienteController extends Controller
         ]);
 
         if ($validacion->fails()) {
-            Flash::error('Error en la validación de datos.');
+            Alert::error('Error', 'Error en la validación de datos.');
             return redirect()->back()->withErrors($validacion)->withInput();
         }
 
         ##validar edad del cliente
         $edad = $fec_actual->diffInYears($fecha_nac);
         if ($edad < 18 || $fecha_nac > $fec_actual) {
-            Flash::error('El cliente debe ser mayor de 18 años y la fecha de nacimiento no puede ser mayor a la fecha actual.');
+            Alert::error('Error', 'El cliente debe ser mayor de 18 años y la fecha de nacimiento no puede ser mayor a la fecha actual.');
             return redirect()->back()->withInput();
         }
 
         ## validar fecha mayor al actual
         // if ($fecha_nac > $fec_actual) {
-        //     Flash::error('La fecha de nacimiento no puede ser mayor a la fecha actual.');
+        //     Alert::error('Error', 'La fecha de nacimiento no puede ser mayor a la fecha actual.');
         //     return redirect()->back()->withInput();
         // }
 
         ##validar cantidad de digitos del campo ci
         $ci = strlen($input['clie_ci']); // utilizar strlen para contar caracteres
         if ($ci > 8) {# mayor a 8 caracteres
-            Flash::error('El nro de cedula solo podra contener 8 digítos.');
+            Alert::error('Error', 'El nro de cedula solo podra contener 8 digítos.');
             return redirect(route('clientes.edit', $id))->withInput();
         }
 
@@ -206,7 +206,7 @@ class ClienteController extends Controller
             $id
         ]);
 
-        Flash::success('Cliente actualizado correctamente.');
+        Alert::success('Éxito', 'Cliente actualizado correctamente.');
 
         return redirect(route('clientes.index'));
     }
@@ -216,15 +216,15 @@ class ClienteController extends Controller
         $clientes = DB::selectOne('SELECT * FROM clientes WHERE id_cliente = ?', [$id]);
 
         if(empty($clientes)) {
-            Flash::error('Cliente no encontrado.');
+            Alert::error('Error', 'Cliente no encontrado.');
             return redirect(route('clientes.index'));
         }
         # Utilizaremos try catch en clientes 
         try {
             DB::delete('DELETE FROM clientes WHERE id_cliente = ?', [$id]);
-            Flash::success('Cliente eliminado correctamente.');
+            Alert::success('Éxito', 'Cliente eliminado correctamente.');
         } catch (\Exception $e) {// excepcion capturada desde la base de datos
-            Flash::error('Error al eliminar el cliente. Por motivo: ' . $e->getMessage());
+            Alert::error('Error', 'Error al eliminar el cliente. Por motivo: ' . $e->getMessage());
         }
 
         return redirect(route('clientes.index'));

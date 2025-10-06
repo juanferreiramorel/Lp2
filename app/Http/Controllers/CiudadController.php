@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Laracasts\Flash\Flash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class CiudadController extends Controller
 {
@@ -55,7 +55,11 @@ class CiudadController extends Controller
             ]
         );
 
-        Flash::success("La ciudad fue creada con éxito.");
+        //Flash::success("La ciudad fue creada con éxito.");
+        //Utilizar SweetAlert
+        //Alert::alert('Exito', 'Ciudad creada con éxito', 'success');
+        //o tambien
+       Alert::toast('Ciudad creada con éxito', 'success');
         //REDIRIGIR A LA VISTA CIUDADES
         return redirect()->route('ciudades.index');
     }
@@ -64,7 +68,7 @@ class CiudadController extends Controller
         //SELECTONE recupera solo una ciudad
         $ciudad = DB::selectOne('SELECT * FROM ciudades WHERE id_ciudad = ?', [$id]);
         if (empty($ciudad)) {
-            flash('Ciudad no encontrada');
+           Alert::toast('Ciudad no encontrada', 'error');
             return redirect()->route('ciudades.index');
         }
         $departamentos = DB::table('departamentos')->pluck('descripcion', 'id_departamento');
@@ -80,7 +84,7 @@ class CiudadController extends Controller
             [$id]
         );
         if (empty($ciudad)) {
-            flash('Ciudad no encontrada');
+            Alert::toast('Ciudad no encontrada', 'error');
             return redirect()->route('ciudades.index');
         }
         $validacion = Validator::make(
@@ -109,7 +113,8 @@ class CiudadController extends Controller
             ]
         );
         
-        Flash::success("La ciudad fue actualizada con éxito.");
+       // Flash::success("La ciudad fue actualizada con éxito.");
+        Alert::toast('Ciudad actualizada con exito', 'success');
         return redirect()->route('ciudades.index');
     }
     public function destroy($id)
@@ -117,11 +122,12 @@ class CiudadController extends Controller
         //Eliminar ciudad por su id
         $ciudad = DB::selectOne('SELECT * FROM ciudades WHERE id_ciudad = ?', [$id]);
         if (empty($ciudad)) {
-            flash('Ciudad no encontrada');
+            Alert::toast('Ciudad no encontrada', 'error');
             return redirect()->route('ciudades.index');
         }
         DB::delete('DELETE FROM ciudades WHERE id_ciudad = ?', [$id]);
-        Flash::success("La ciudad fue eliminada con éxito.");
+        Alert::toast('Ciudad eliminada con exito', 'success');
+
         return redirect()->route('ciudades.index');
     }
 }

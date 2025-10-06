@@ -16,16 +16,19 @@
                         <td>{{ $ciudad->descripcion }}</td>
                         <td>{{ $ciudad->departamento }}</td>
                         <td style="width: 120px">
+                            {!! Form::open(['route' => ['ciudades.destroy', $ciudad->id_ciudad], 'method' => 'delete']) !!}
                             <div class='btn-group'>
                                 <a href="{{ route('ciudades.edit', [$ciudad->id_ciudad]) }}"
                                     class='btn btn-default btn-xs'>
                                     <i class="far fa-edit"></i>
                                 </a>
-                                <button type="button" class="btn btn-danger btn-xs"
-                                    onclick="openGlobalDeleteModal('{{ route('ciudades.destroy', $ciudad->id_ciudad) }}', '¿Deseas dar de baja esta ciudad?')">
-                                    <i class="far fa-trash-alt"></i>
-                                </button>
+                                {!! Form::button('<i class="far fa-trash-alt"></i>', [
+                                    'type' => 'submit',
+                                    'class' => 'btn btn-danger btn-xs alert-delete',
+                                    'data-mensaje' => $ciudad->descripcion,
+                                ]) !!}
                             </div>
+                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach

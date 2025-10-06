@@ -6,7 +6,8 @@
             <div class="row mb-2">
                 <div class="col-sm-12">
                     <h1>
-                    Crear Nuevo Cliente
+                        <i class="fas fa-user"></i>
+                        Crear Nuevo Clientes
                     </h1>
                 </div>
             </div>
@@ -15,11 +16,8 @@
 
     <div class="content px-3">
 
-        {{-- solo funciona con la libreria validator --}}
         @include('adminlte-templates::common.errors')
-        {{-- llamar a flash message para mostrar mensaje personalizados desde el controlador --}}
-        @include('flash::message')
-
+        @include('sweetalert::alert')
 
         <div class="card">
 

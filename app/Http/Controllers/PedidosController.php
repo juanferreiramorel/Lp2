@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Laracasts\Flash\Flash;
 use Barryvdh\DomPDF\Facade\Pdf;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class PedidosController extends Controller
 {
@@ -124,7 +124,7 @@ class PedidosController extends Controller
             return redirect()->back()->withErrors($e->getMessage());
         }
 
-        Flash::success('Pedido registrado exitosamente.');
+        Alert::success('Éxito', 'Pedido registrado exitosamente.');
         return redirect()->route('pedidos.index');
     }
 
@@ -142,7 +142,7 @@ class PedidosController extends Controller
         );
 
         if (empty($pedido)) {
-            Flash::error('Pedido no encontrado');
+            Alert::error('Error', 'Pedido no encontrado');
             return redirect()->route('pedidos.index');
         }
 
@@ -166,7 +166,7 @@ class PedidosController extends Controller
         $pedido = DB::selectOne('SELECT * FROM pedidos WHERE id_pedido = ?', [$id]);
 
         if (empty($pedido)) {
-            Flash::error('Pedido no encontrado');
+            Alert::error('Error', 'Pedido no encontrado');
             return redirect()->route('pedidos.index');
         }
 
@@ -198,7 +198,7 @@ class PedidosController extends Controller
         $pedido = DB::selectOne('SELECT * FROM pedidos WHERE id_pedido = ?', [$id]);
 
         if (empty($pedido)) {
-            Flash::error('Pedido no encontrado');
+            Alert::error('Error', 'Pedido no encontrado');
             return redirect()->route('pedidos.index');
         }
 
@@ -280,7 +280,7 @@ class PedidosController extends Controller
             return redirect()->back()->withErrors($e->getMessage());
         }
 
-        Flash::success('Pedido actualizado exitosamente.');
+        Alert::success('Éxito', 'Pedido actualizado exitosamente.');
         return redirect()->route('pedidos.index');
     }
 
@@ -290,7 +290,7 @@ class PedidosController extends Controller
         $pedido = DB::selectOne('SELECT * FROM pedidos WHERE id_pedido = ?', [$id]);
 
         if (empty($pedido)) {
-            Flash::error('Pedido no encontrado');
+            Alert::error('Error', 'Pedido no encontrado');
             return redirect()->route('pedidos.index');
         }
 
@@ -305,7 +305,7 @@ class PedidosController extends Controller
             return redirect()->back()->withErrors($e->getMessage());
         }
 
-        Flash::success('Pedido cancelado.');
+        Alert::success('Éxito', 'Pedido cancelado.');
         return redirect()->route('pedidos.index');
     }
 

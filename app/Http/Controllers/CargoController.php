@@ -3,18 +3,60 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Laracasts\Flash\Flash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class CargoController extends Controller
 {
-    public function index()
+    public function __construct()
     {
+        // validar que el usuario este autenticado
+        $this->middleware('auth');
+        // validar permisos para cada accion
+        $this->middleware('permission:cargos index')->only(['index']);
+        $this->middleware('permission:cargos create')->only(['create', 'store']);
+        $this->middleware('permission:cargos edit')->only(['edit', 'update']);
+        $this->middleware('permission:cargos destroy')->only(['destroy']);
+    }
+    public function index(Request $request)
+    {
+        $buscar = $request->get('buscar');
         # Ejemplo query builder
         #$cargos = DB::table('cargos')->get();
         # Ejemplo con sql puro a utilizar
-        $cargos = DB::select('select * from cargos');
+        if ($buscar) {
+            $cargos = DB::select('select * from cargos where descripcion ilike ?', ['%' . $buscar . '%']);
+        } else {
+            $cargos = DB::select('select * from cargos');
+        }
+
+        // Definimos los valores de paginación
+        $page = $request->input('page', 1);   // página actual (por defecto 1)
+        $perPage = 10;                        // cantidad de registros por página
+        $total = count($cargos);           // total de registros
+
+        // Cortamos el array para solo devolver los registros de la página actual
+        $items = array_slice($cargos, ($page - 1) * $perPage, $perPage);
+
+        // Creamos el paginador manualmente
+        $cargos = new LengthAwarePaginator(
+            $items,        // registros de esta página
+            $total,        // total de registros
+            $perPage,      // registros por página
+            $page,         // página actual
+            [
+                'path'  => $request->url(),     // mantiene la ruta base
+                'query' => $request->query(),   // mantiene parámetros como "buscar"
+            ]
+        );
+
+        // si la accion es buscardor entonces significa que se debe recargar mediante ajax la tabla
+        if ($request->ajax()) {
+            //solo llmamamos a table.blade.php y mediante compact pasamos la variable users
+            return view('cargos.table')->with('cargos', $cargos);
+        }
 
         return view('cargos.index')->with('cargos', $cargos);
     }
@@ -54,7 +96,7 @@ class CargoController extends Controller
         );
 
         ## Imprimir mensaje de éxito y redirigir a la vista index
-        Flash::success("El cargo fue creado con éxito.");
+        Alert::toast('El cargo fue creado con éxito.', 'success');
         return redirect(route('cargos.index'));
     }
 
@@ -65,7 +107,7 @@ class CargoController extends Controller
 
         // Verificar si el cargo existe y no está vacío
         if (empty($cargo)) {
-            Flash::error("El cargo no fue encontrado.");
+            Alert::toast('El cargo no fue encontrado.', 'error');
             // Redirigir a la vista index si el cargo no existe
             return redirect()->route('cargos.index');
         }
@@ -82,7 +124,7 @@ class CargoController extends Controller
         $cargo = DB::selectOne('select * from cargos where id_cargo = ?', [$id]);
         // Verificar si el cargo existe y no está vacío
         if (empty($cargo)) {
-            Flash::error("El cargo no fue encontrado.");
+            Alert::toast('El cargo no fue encontrado.', 'error');
             // Redirigir a la vista index si el cargo no existe
             return redirect()->route('cargos.index');
         }
@@ -111,7 +153,7 @@ class CargoController extends Controller
         );
 
         // Imprimir mensaje de éxito y redirigir a la vista index
-        Flash::success("El cargo fue actualizado con éxito.");
+        Alert::toast('El cargo fue actualizado con éxito.', 'success');
         return redirect(route('cargos.index'));
     }
 
@@ -121,7 +163,7 @@ class CargoController extends Controller
         $cargo = DB::selectOne('select * from cargos where id_cargo = ?', [$id]);
         // Verificar si el cargo existe y no está vacío
         if (empty($cargo)) {
-            Flash::error("El cargo no fue encontrado.");
+            Alert::toast('El cargo no fue encontrado.', 'error');
             // Redirigir a la vista index si el cargo no existe
             return redirect()->route('cargos.index');
         }
@@ -130,7 +172,7 @@ class CargoController extends Controller
         DB::delete('delete from cargos where id_cargo = ?', [$id]);
 
         // Imprimir mensaje de éxito y redirigir a la vista index
-        Flash::success("El cargo fue eliminado con éxito.");
+       Alert::toast('El cargo fue eliminado con éxito.', 'success');
         return redirect(route('cargos.index'));
     }
 }

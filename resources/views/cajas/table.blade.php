@@ -20,15 +20,18 @@
                         <td>{{ $caja->punto_expedicion }}</td>
                         <td>{{ $caja->ultima_factura_impresa }}</td>
                         <td style="width: 120px">
+                            {!! Form::open(['route' => ['cajas.destroy', $caja->id_caja], 'method' => 'delete']) !!}
                             <div class='btn-group'>
                                 <a href="{{ route('cajas.edit', [$caja->id_caja]) }}" class='btn btn-default btn-xs'>
                                     <i class="far fa-edit"></i>
                                 </a>
-                                 <button type="button" class="btn btn-danger btn-xs"
-                                    onclick="openGlobalDeleteModal('{{ route('cajas.destroy', $caja->id_caja) }}', '¿Deseas dar de baja esta caja?')">
-                                    <i class="far fa-trash-alt"></i>
-                                </button>
+                                {!! Form::button('<i class="far fa-trash-alt"></i>', [
+                                    'type' => 'submit',
+                                    'class' => 'btn btn-danger btn-xs alert-delete',
+                                    'data-mensaje' => $caja->descripcion,
+                                ]) !!}
                             </div>
+                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach

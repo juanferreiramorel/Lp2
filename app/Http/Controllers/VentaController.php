@@ -22,7 +22,17 @@ class VentaController extends Controller
             order by v.fecha_venta desc"
         );
 
-        return view('ventas.index')->with('ventas', $ventas);
+        // Consulta para recuperar cajas
+        $caja = DB::table('cajas')->pluck('descripcion', 'id_caja');
+
+        // Validar que el usuario no tenga una caja abierta en la fecha actual
+        $caja_abierta = DB::selectOne(
+            "SELECT * FROM apertura_cierre_cajas 
+            WHERE user_id = ? AND estado = 'ABIERTA'",
+            [auth()->user()->id]
+        );
+
+        return view('ventas.index')->with('ventas', $ventas)->with('cajas', $caja)->with('caja_abierta', $caja_abierta);
     }
 
     public function create()
@@ -103,8 +113,6 @@ class VentaController extends Controller
         // Agregar transacciones
         DB::beginTransaction();
         try {
-             $totalLimpio = str_replace('.', '', $input['total'] ?? '0');
-
             $ventas = DB::table('ventas')->insertGetId([
                 'id_cliente' => $input['id_cliente'],
                 'condicion_venta' => $input['condicion_venta'],
@@ -113,10 +121,10 @@ class VentaController extends Controller
                 'fecha_venta' => $input['fecha_venta'],
                 'factura_nro' => $input['factura_nro'] ?? '0',
                 'user_id' => $user_id,
-                'total' => $totalLimpio,  // <-- USAMOS EL VALOR LIMPIO SIN PUNTOS
+                'total' => $input['total'] ?? 0,
                 'id_sucursal' => $input['id_sucursal'],
                 'estado' => 'COMPLETADO'
-           ],'id_venta');
+            ], 'id_venta');
 
             // insertar detalle ventas
             $subtotal = 0;
@@ -255,8 +263,6 @@ class VentaController extends Controller
             Flash::error('Venta no encontrada');
             return redirect()->route('ventas.index');
         }
-        $input['intervalo'] = $input['intervalo'] ?? 0;
-        $input['cantidad_cuota'] = $input['cantidad_cuota'] ?? 0;
 
         // Validaciones personalizadas para el formulario ventas
         $validacion = Validator::make(
@@ -285,14 +291,12 @@ class VentaController extends Controller
 
         DB::beginTransaction();
         try {
-            $totalLimpio = str_replace('.', '', $input['total'] ?? 0); 
             // Actualizar la venta
-            DB::update('UPDATE ventas SET condicion_venta = ?, intervalo = ?, cantidad_cuota = ?, id_sucursal = ?, total = ? WHERE id_venta = ?', [
+            DB::update('UPDATE ventas SET condicion_venta = ?, intervalo = ?, cantidad_cuota = ?, id_sucursal = ? WHERE id_venta = ?', [
                 $input['condicion_venta'],
                 $input['intervalo'],
                 $input['cantidad_cuota'],
                 $input['id_sucursal'],
-                $totalLimpio,
                 $id
             ]);
 

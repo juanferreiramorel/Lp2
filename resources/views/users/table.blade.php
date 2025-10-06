@@ -10,6 +10,8 @@
                     <th>Teléfono</th>
                     <th>Fecha Ingreso</th>
                     <th>Estado</th>
+                    <th>Rol</th>
+                    <th>Sucursal</th>
                     <th colspan="3">Acciones</th>
                 </tr>
             </thead>
@@ -21,26 +23,37 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->ci }}</td>
                         <td>{{ $user->telefono }}</td>
-                        <td>{{ !empty($user->fecha_ingreso) ? Carbon\Carbon::parse($user->fecha_ingreso)->format('d/m/Y') : '' }}</td>
+                        <td>{{ !empty($user->fecha_ingreso) ? Carbon\Carbon::parse($user->fecha_ingreso)->format('d/m/Y') : '' }}
+                        </td>
                         <td>{{ $user->estado == true ? 'Activo' : 'Inactivo' }}</td>
+                        <td>{{ $user->rol }}</td>
+                        <td>{{ $user->sucursal }}</td>
                         <td style="width: 120px">
-                            <div class='btn-group', title="Editar">
-                                <a href="{{ route('users.edit', [$user->id]) }}" class='btn btn-default btn-xs'>
-                                    <i class="far fa-edit"></i>
-                                    
-                                </a>
-                                @if($user->estado == true)
-                                    <button type="button" class="btn btn-danger btn-xs"
-                                        onclick="openGlobalDeleteModal('{{ route('users.destroy', $user->id) }}', '¿Deseas inactivar este usuario?')">
-                                        <i class="far fa-trash-alt"></i>
-                                    </button>
-                                @else
-                                    <button type="button" class="btn btn-success btn-xs"
-                                        onclick="openGlobalConfirmModal('{{ route('users.destroy', $user->id) }}', 'Activar Usuario', 'success', '¿Deseas activar este usuario?')">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                @endif
+                            {!! Form::open(['route' => ['users.destroy', $user->id], 'method' => 'delete']) !!}
+                            <div class='btn-group'>
+                                @can('users edit')
+                                    <a href="{{ route('users.edit', [$user->id]) }}" class='btn btn-default btn-xs'>
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                @endcan
+
+                                @can('users destroy')
+                                    @if ($user->estado == true)
+                                        {!! Form::button('<i class="far fa-trash-alt"></i>', [
+                                            'type' => 'submit',
+                                            'class' => 'btn btn-danger btn-xs',
+                                            'onclick' => "return confirm('Desea inactivar el usuario?')",
+                                        ]) !!}
+                                    @else
+                                        {!! Form::button('<i class="fas fa-check"></i>', [
+                                            'type' => 'submit',
+                                            'class' => 'btn btn-success btn-xs',
+                                            'onclick' => "return confirm('Desea activar el usuario?')",
+                                        ]) !!}
+                                    @endif
+                                @endcan
                             </div>
+                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach
@@ -54,4 +67,3 @@
         </div>
     </div>
 </div>
-{{-- Holaaaa --}}

@@ -38,3 +38,17 @@
         'placeholder' => 'Seleccione una marca',
     ]) !!}
 </div>
+<!-- imagen_producto Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('imagen_producto', 'Imagen del Producto:') !!}
+    {!! Form::file('imagen_producto', ['class' => 'form-control', 'accept' => 'image/*']) !!}
+
+    <!-- Mostrar la imagen actual si existe -->
+    @if (isset($productos) && $productos->imagen_producto)
+        <div class="mt-2">
+            <p>Imagen actual:</p>
+            <img src="{{ asset('img/productos/' . $productos->imagen_producto) }}" alt="Imagen del Producto"
+                style="width: 150px; height: 80px; display: block; margin: auto;">
+        </div>
+    @endif
+</div>

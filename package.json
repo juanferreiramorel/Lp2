@@ -15,5 +15,8 @@
         "sass": "^1.15.2",
         "sass-loader": "^8.0.0",
         "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "husky": "^9.1.7"
     }
 }

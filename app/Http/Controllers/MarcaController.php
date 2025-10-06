@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Laracasts\Flash\Flash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class MarcaController extends Controller
 {
@@ -42,14 +42,14 @@ class MarcaController extends Controller
                 $input['descripcion']
             ]
         );
-        Flash::success('Marca creada con exito');
+        Alert::toast('Marca registrada con exito', 'success');
         return redirect()->route('marcas.index');
     }
     public function edit($id)
     {
         $marca = DB::selectOne('SELECT * FROM marcas WHERE id_marca = ?', [$id]);
         if (empty($marca)) {
-            Flash::error('Marca no encontrado');
+            Alert::toast('Marca no encontrada', 'error');
             return redirect()->route('marcas.index');
         }
         return view('marcas.edit')->with('marcas', $marca);
@@ -58,7 +58,7 @@ class MarcaController extends Controller
     {
         $marca = DB::selectOne('SELECT * FROM marcas WHERE id_marca = ?', [$id]);
         if (empty($marca)) {
-            Flash::error('Marca no encontrado');
+            Alert::toast('Marca no encontrada', 'error');
             return redirect()->route('marcas.index');
         }
         $input = $request->all();
@@ -83,18 +83,18 @@ class MarcaController extends Controller
                 $id
             ]
         );
-        Flash::success('Marca actualizada con exito');
+        Alert::toast('Marca actualizada con exito', 'success');
         return redirect()->route('marcas.index');
     }
     public function destroy($id)
     {
         $marca = DB::selectOne('SELECT * FROM marcas WHERE id_marca = ?', [$id]);
         if (empty($marca)) {
-            Flash::error('Marca no encontrado');
+            Alert::toast('Marca no encontrada', 'error');
             return redirect()->route('marcas.index');
         }
         DB::delete('DELETE FROM marcas WHERE id_marca = ?', [$id]);
-        Flash::success('Marca eliminada con exito');
+        Alert::toast('Marca eliminada con exito', 'success');
         return redirect()->route('marcas.index');
     }
 }

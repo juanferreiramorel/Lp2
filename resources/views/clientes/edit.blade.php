@@ -6,7 +6,7 @@
             <div class="row mb-2">
                 <div class="col-sm-12">
                     <h1>
-                        Edit Clientes
+                        Editar Clientes
                     </h1>
                 </div>
             </div>
@@ -15,9 +15,8 @@
 
     <div class="content px-3">
 
-        {{-- solo funciona con la libreria validator --}}
         @include('adminlte-templates::common.errors')
-        {{-- llamar a flash message para mostrar mensaje personalizados desde el controlador --}}
+        {{-- Llamar a Flash message para mostrar mensajes personalizados desde el controlador --}}
         @include('flash::message')
 
         <div class="card">

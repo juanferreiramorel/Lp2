@@ -32,7 +32,7 @@ class ReporteController extends Controller
             # de hoja landscape=horizontal, portrait=vertical
 
             ##retornar pdf con una configuracion de pagina tipo de impresion y que se hara una descarga
-            return $pdf->stream("ReporteCargos.pdf");
+            return $pdf->download("ReporteCargos.pdf");
         }
 
 
@@ -82,7 +82,7 @@ class ReporteController extends Controller
             # de hoja landscape=horizontal, portrait=vertical
 
             // retornar la descarga del archivo
-            return $pdf->stream("ReporteClientes.pdf");
+            return $pdf->download("ReporteClientes.pdf");
         }
 
         // consulta para llenar el select de ciudad en reporte cliente
@@ -115,8 +115,7 @@ class ReporteController extends Controller
             # de hoja landscape=horizontal, portrait=vertical
 
             ##retornar pdf con una configuracion de pagina tipo de impresion y que se hara una descarga
-            // ya no descargar sino mostrar en el navegador
-            return $pdf->stream("ReporteProveedores.pdf");
+            return $pdf->download("ReporteProveedores.pdf");
         }
 
         return view('reportes.rpt_proveedores')->with('proveedores', $proveedores);
@@ -147,7 +146,7 @@ class ReporteController extends Controller
             )
                 ->setPaper('a4', 'portrait');
 
-            return $pdf->stream("ReporteProductos.pdf");
+            return $pdf->download("ReporteProductos.pdf");
         }
 
         return view('reportes.rpt_productos')->with('productos', $productos);
@@ -177,7 +176,7 @@ class ReporteController extends Controller
             )
                 ->setPaper('a4', 'portrait');
 
-            return $pdf->stream("ReporteSucursales.pdf");
+            return $pdf->download("ReporteSucursales.pdf");
         }
 
         return view('reportes.rpt_sucursales')->with('sucursales', $sucursales);

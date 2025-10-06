@@ -11,7 +11,7 @@
                     <a class="btn btn-primary float-right"
                        href="{{ route('clientes.create') }}">
                        <i class="fas fa-plus"></i>
-                        Nuevo Cliente
+                        Agregar Cliente
                     </a>
                 </div>
             </div>
@@ -20,7 +20,7 @@
 
     <div class="content px-3">
 
-        @include('flash::message')
+        @include('sweetalert::alert')
 
         <div class="clearfix"></div>
 

@@ -5,7 +5,7 @@
                 <tr>
                     <th>#</th>
                     <th>Descripcion</th>
-                    <th colspan="3">Action</th>
+                    <th colspan="3">Acción</th>
                 </tr>
             </thead>
             <tbody>
@@ -14,14 +14,17 @@
                         <td>{{ $cargo->id_cargo }}</td>
                         <td>{{ $cargo->descripcion }}</td>
                         <td style="width: 120px">
+                            {!! Form::open(['route' => ['cargos.destroy', $cargo->id_cargo], 'method' => 'delete']) !!}
                             <div class='btn-group'>
                                 <a href="{{ route('cargos.edit', [$cargo->id_cargo]) }}" class='btn btn-default btn-xs'>
                                     <i class="far fa-edit"></i>
                                 </a>
-                                <button type="button" class="btn btn-danger btn-xs"
-                                    onclick="openGlobalDeleteModal('{{ route('cargos.destroy', $cargo->id_cargo) }}', '¿Deseas dar de baja este cargo?')">
-                                    <i class="far fa-trash-alt"></i>
-                                </button>
+
+                                {!! Form::button('<i class="far fa-trash-alt"></i>', [
+                                    'type' => 'submit',
+                                    'class' => 'btn btn-danger btn-xs alert-delete',
+                                    'data-mensaje' => $cargo->descripcion,
+                                ]) !!}
                             </div>
                             {!! Form::close() !!}
                         </td>

@@ -8,10 +8,9 @@
                     <h1>Cargos</h1>
                 </div>
                 <div class="col-sm-6">
-                    <a class="btn btn-primary float-right"
-                       href="{{ route('cargos.create') }}">
-                       <i class="fas fa-plus-circle"></i>
-                       Nuevo
+                    <a class="btn btn-primary float-right" href="{{ route('cargos.create') }}">
+                        <i class="fas fa-plus-circle"></i>
+                        Nuevo Cargo
                     </a>
                 </div>
             </div>
@@ -20,13 +19,15 @@
 
     <div class="content px-3">
 
-        @include('flash::message')
+        @include('sweetalert::alert')
 
-        <div class="clearfix"></div>
+        <div class="clearfix">
+            @includeIf('layouts.buscador', ['url' => url()->current()])
+        </div>
 
-        <div class="card">
+        <!-- agregar la clase tabla-container para mostrar los valores filtrados de table-->
+        <div class="card tabla-container">
             @include('cargos.table')
         </div>
     </div>
-
 @endsection

@@ -125,8 +125,33 @@
                     // prop es para asignar una propiedad al campo input y decirle es requerido
                     $("#intervalo").prop('required', true);
                     $("#cantidad_cuota").prop('required', true);
+                    
                 }
             });
+        });
+        
+        $(document).ready(function() {
+
+            // NUEVO: Formatear el total antes de enviar el formulario
+            $('form').on('submit', function() {
+                // Obtener el valor actual del total (con puntos)
+                var totalConFormato = $('#total').val();
+                // Eliminar los puntos para enviar solo el número
+                var totalLimpio = totalConFormato.replace(/\./g, '');
+                // Actualizar el campo hidden con el valor limpio
+                $('#total_valor').val(totalLimpio);
+                // Actualizar el campo total con el valor limpio (temporalmente para el envío)
+                $('#total').val(totalLimpio);
+            });
+
+            // Restaurar el formato visual después del envío (si es necesario)
+            @if (isset($ventas))
+                // Formatear el total al cargar la página para edición
+                var totalValor = {{ $ventas->total }};
+                $('#total').val(totalValor.toLocaleString('es-PY', {
+                    minimumFractionDigits: 0
+                }));
+            @endif
         });
     </script>
 @endpush

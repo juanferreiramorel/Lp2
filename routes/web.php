@@ -1,15 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ComprasController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| Aquí es donde puedes registrar las rutas web para tu aplicación.
+| Estas rutas son cargadas por el RouteServiceProvider y todas serán
+| asignadas al grupo "web" middleware.
 |
 */
 
@@ -21,49 +23,42 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Auth::routes();
 
-## Crear rutas para Cargo de todas las acciones
+// Login
+Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+
+// Recursos principales
 Route::resource('cargos', App\Http\Controllers\CargoController::class);
-## Crear rutas para Departamento de todas las acciones
 Route::resource('departamentos', App\Http\Controllers\DepartamentoController::class);
-## Crear rutas para Proveedor de todas las acciones
 Route::resource('proveedores', App\Http\Controllers\ProveedorController::class);
-## Crear rutas para Marca de todas las acciones
-Route::resource('marcas', App\Http\Controllers\MarcaController::class);
-## Crear rutas para Ciudad de todas las acciones
 Route::resource('ciudades', App\Http\Controllers\CiudadController::class);
-## Crear rutas para Producto de todas las acciones
-Route::resource('productos', App\Http\Controllers\ProductoController::class);
-## Crear rutas para Sucursal de todas las acciones
 Route::resource('sucursales', App\Http\Controllers\SucursalController::class);
-## Crear rutas para Caja de todas las acciones
-Route::resource('cajas', App\Http\Controllers\CajaController::class);
-## Crear rutas para Users
+Route::resource('marcas', App\Http\Controllers\MarcaController::class);
+Route::resource('productos', App\Http\Controllers\ProductoController::class);
 Route::resource('users', App\Http\Controllers\UserController::class);
-## Crear rutas para clientes
 Route::resource('clientes', App\Http\Controllers\ClienteController::class);
-## Crear rutas para ventas
 Route::resource('ventas', App\Http\Controllers\VentaController::class);
-## Crear rutas para pedidos
+Route::resource('cajas', App\Http\Controllers\CajaController::class);
 Route::resource('pedidos', App\Http\Controllers\PedidosController::class);
-## Ruta para el buscador
-Route::get('buscar-productos', [App\Http\Controllers\VentaController::class, 'buscarProducto']);
-
-## Ruta para el buscador
-Route::get('buscar-productoscompras', [App\Http\Controllers\ComprasController::class, 'buscarProducto']);
-## Cargar ruta pdf
-Route::get('pdf', [App\Http\Controllers\VentaController::class, 'pdf']);
-## Ruta reporte cargo
-Route::get('reporte-cargos', [App\Http\Controllers\ReporteController::class, 'rpt_cargos']);
-## Ruta reporte cliente
-Route::get('reporte-clientes', [App\Http\Controllers\ReporteController::class, 'rpt_clientes']);
-## Ruta reporte proveedor
-Route::get('reporte-proveedores', [App\Http\Controllers\ReporteController::class, 'rpt_proveedores']);
-## Ruta reporte producto
-Route::get('reporte-productos', [App\Http\Controllers\ReporteController::class, 'rpt_productos']);
-## Ruta reporte sucursal
-Route::get('reporte-sucursales', [App\Http\Controllers\ReporteController::class, 'rpt_sucursales']);
-## Rutas para compras
 Route::resource('compras', App\Http\Controllers\ComprasController::class);
+Route::resource('stock', App\Http\Controllers\StockController::class);
 
-// Buscador
+// Buscadores
+Route::get('buscar-productos', [App\Http\Controllers\VentaController::class, 'buscarProducto']);
+Route::get('buscar-productoscompras', [ComprasController::class, 'buscarProducto']);
 Route::get('/search', [App\Http\Controllers\SearchController::class, 'index'])->name('search');
+
+// PDF y Reportes
+Route::get('pdf', [App\Http\Controllers\VentaController::class, 'pdf']);
+Route::get('reporte-cargos', [App\Http\Controllers\ReporteController::class, 'rpt_cargos']);
+Route::get('reporte-clientes', [App\Http\Controllers\ReporteController::class, 'rpt_clientes']);
+Route::get('reporte-proveedores', [App\Http\Controllers\ReporteController::class, 'rpt_proveedores']);
+Route::get('reporte-productos', [App\Http\Controllers\ReporteController::class, 'rpt_productos']);
+Route::get('reporte-sucursales', [App\Http\Controllers\ReporteController::class, 'rpt_sucursales']);
+Route::get('reporte-sucursales', [App\Http\Controllers\ReporteController::class, 'rpt_sucursales']);
+
+// Roles y permisos
+Route::resource('permissions', App\Http\Controllers\PermissionController::class);
+Route::resource('roles', App\Http\Controllers\RoleController::class);
+
+// Apertura y cierre de caja
+Route::post('apertura_cierre_cajas', [App\Http\Controllers\AperturaCierreCajaController::class, 'store']);

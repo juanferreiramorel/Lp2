@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Laracasts\Flash\Flash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class SucursalController extends Controller
 {
@@ -58,13 +58,13 @@ class SucursalController extends Controller
             ]
         );
         //Redirigir a la lista de sucursales con un mesaje de exito
-        Flash::success('Sucursal creada con exito');
+        Alert::toast('Sucursal creada con exito', 'success');
         return redirect()->route('sucursales.index');   
     }
     public function edit($id){
         $sucursales = DB::selectOne('SELECT * FROM sucursales WHERE id_sucursal = ?', [$id]); //SELECTONE devuelve un objeto()
         if (empty($sucursales)) {
-            flash('Sucursal no encontrado');
+            Alert::toast('Sucursal no encontrada', 'error');
             return redirect()->route('sucursales.index');
         }
         //Obtener ciudades
@@ -77,7 +77,7 @@ class SucursalController extends Controller
         $sucursal = DB::selectOne('SELECT * FROM sucursales WHERE id_sucursal = ?', [$id]);
         //Validar si el producto no existe, redirigir con un mesaje de error
         if (empty($sucursal)) {
-            flash('Sucursal no encontrado');
+            Alert::toast('Sucursal no encontrada', 'error');
             return redirect()->route('sucursales.index');
         }
         //Validar los datos
@@ -111,21 +111,21 @@ class SucursalController extends Controller
             ]
         );
         //Redirigir a la lista de sucursales con un mesaje de exito
-        Flash::success('Sucursal actualizada con exito');
+        Alert::toast('Sucursal actualizada con exito', 'success');
         return redirect()->route('sucursales.index');
     }
     public function destroy($id){
         //Validar si el producto no existe
         $sucursal = DB::delete('DELETE FROM sucursales WHERE id_sucursal = ?', [$id]);
         if (empty($sucursal)) {
-            flash('Sucursal no encontrado');
+            Alert::toast('Sucursal no encontrada', 'error');
             return redirect()->route('sucursales.index');
         }
         //Eliminar el producto de la base de datos
         DB::delete('DELETE FROM sucursales WHERE id_sucursal = ?', [$id]);
         
         //Redirigir a la lista de productos con un mesaje de exito
-        flash('Sucursal eliminada con exito');
+        Alert::toast('Sucursal eliminada con exito', 'success');
 
         return redirect(route('sucursales.index'));
     }

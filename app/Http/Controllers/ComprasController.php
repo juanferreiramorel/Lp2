@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Laracasts\Flash\Flash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ComprasController extends Controller
 {
@@ -85,7 +85,7 @@ class ComprasController extends Controller
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36', // CORREGIDO: min:0 a min:1
+            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
 
             // detalle desde vista (igual que ventas): codigo[], cantidad[], precio[]
             'codigo'              => 'required|array|min:1',
@@ -167,7 +167,7 @@ class ComprasController extends Controller
             }
 
             DB::commit();
-            Flash::success('Compra registrada, stock actualizado.');
+            Alert::success('Éxito', 'Compra registrada, stock actualizado.');
             return redirect()->route('compras.index');
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -191,7 +191,7 @@ class ComprasController extends Controller
             [$id]
         );
         if (!$compra) {
-            Flash::error('Compra no encontrada.');
+            Alert::error('Error', 'Compra no encontrada.');
             return redirect()->route('compras.index');
         }
 
@@ -210,7 +210,7 @@ class ComprasController extends Controller
     {
         $compra = DB::selectOne("SELECT c.*, descripcion AS sucursal FROM compras c JOIN sucursales USING(id_sucursal)   WHERE id_compra = ?", [$id]);
         if (!$compra) {
-            Flash::error('Compra no encontrada.');
+            Alert::error('Error', 'Compra no encontrada.');
             return redirect()->route('compras.index');
         }
 
@@ -259,7 +259,7 @@ class ComprasController extends Controller
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
             'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:0|max:36', // CORREGIDO: min:0 a min:1
+            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
 
             'codigo'              => 'required|array|min:1',
             'codigo.*'            => 'required|integer',
@@ -360,7 +360,7 @@ class ComprasController extends Controller
             }
 
             DB::commit();
-            Flash::success('Compra actualizada y stock ajustado.');
+            Alert::success('Éxito', 'Compra actualizada y stock ajustado.');
             return redirect()->route('compras.show', $id);
         } catch (\Throwable $e) {
             DB::RollBack();
@@ -374,7 +374,7 @@ class ComprasController extends Controller
         // Si anulas compras, probablemente debas revertir el stock
         $compra = DB::selectOne("SELECT * FROM compras WHERE id_compra = ?", [$id]);
         if (!$compra) {
-            Flash::error('Compra no encontrada.');
+            Alert::error('Error', 'Compra no encontrada.');
             return redirect()->route('compras.index');
         }
 
@@ -393,7 +393,7 @@ class ComprasController extends Controller
             }
 
             DB::commit();
-            Flash::success('Compra anulada y stock revertido.');
+            Alert::success('Éxito', 'Compra anulada y stock revertido.');
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error en compras.destroy: ' . $e->getMessage());

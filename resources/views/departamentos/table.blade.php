@@ -14,16 +14,24 @@
                         <td>{{ $departamento->id_departamento }}</td>
                         <td>{{ $departamento->descripcion }}</td>
                         <td style="width: 120px">
+                            {!! Form::open(['route' => ['departamentos.destroy', $departamento->id_departamento], 'method' => 'delete']) !!}
                             <div class='btn-group'>
-                                <a href="{{ route('departamentos.edit', [$departamento->id_departamento]) }}"
-                                    class='btn btn-default btn-xs'>
-                                    <i class="far fa-edit"></i>
-                                </a>
-                                <button type="button" class="btn btn-danger btn-xs"
-                                    onclick="openGlobalDeleteModal('{{ route('departamentos.destroy', $departamento->id_departamento) }}', '¿Deseas dar de baja este departamento?')">
-                                    <i class="far fa-trash-alt"></i>
-                                </button>
+                                @can('departamentos edit')
+                                    <a href="{{ route('departamentos.edit', [$departamento->id_departamento]) }}"
+                                        class='btn btn-default btn-xs'>
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                @endcan
+
+                                @can('departamentos destroy')
+                                    {!! Form::button('<i class="far fa-trash-alt"></i>', [
+                                        'type' => 'submit',
+                                        'class' => 'btn btn-danger btn-xs',
+                                        'onclick' => "return confirm('Desea dar de baja el departamento?')",
+                                    ]) !!}
+                                @endcan
                             </div>
+                            {!! Form::close() !!}
                         </td>
                     </tr>
                 @endforeach
