@@ -20,26 +20,39 @@ class StockController extends Controller
     {
         // Obtener el término de búsqueda del request
         $buscar = $request->get('buscar');
+        $input = $request->all();
+        $filtro_sucursales = "";
+        $filtro_productos = "";
         // validar que contenga un valor el buscar
         $sql = '';// definir una variable sql vacia
 
         if (!empty($buscar)) {
-            $sql = " WHERE p.descripcion iLIKE '%" . $buscar . "%' 
+            $sql = "AND (p.descripcion iLIKE '%" . $buscar . "%' 
             or m.descripcion iLIKE '%" . $buscar . "%' 
             or sc.descripcion iLIKE '%" . $buscar . "%' 
             or m.descripcion iLIKE '%" . $buscar . "%' 
-            or cast(s.cantidad as text)iLIKE '%" . $buscar . "%'"; // si tiene valor agregar la condicion a la variable sql
+            or cast(s.cantidad as text)iLIKE '%" . $buscar . "%')"; // si tiene valor agregar la condicion a la variable sql
+        }
+        
+        if (!empty($input['sucursales'])) {
+            // concatenar los filtros y siempre dejar un espacio en blanco al comienzo del string " "
+            $filtro_sucursales = " AND sc.id_sucursal = " . $input['sucursales'];
+        }
+        if (!empty($input['productos'])) {
+            // concatenar los filtros y siempre dejar un espacio en blanco al comienzo del string " "
+            $filtro_productos = " AND p.id_producto = " . $input['productos'];
         }
         
         // Consulta para obtener los productos con la marca asociada y si posee filtros
         $stock = DB::select(
             'SELECT s.cantidad, m.descripcion as marca, p.descripcion AS producto, sc.descripcion as sucursal,
-            s.id_stock AS id
+            s.id_stock AS id, p.descripcion
              FROM stocks s
              JOIN sucursales sc USING(id_sucursal)
              JOIN productos p USING(id_producto) 
              JOIN marcas m USING(id_marca)
-             ' . $sql . '
+             WHERE 1=1
+             ' . $sql . ' ' . $filtro_sucursales . ' ' . $filtro_productos . '
              ORDER BY p.id_producto desc'
         );
 
@@ -64,12 +77,16 @@ class StockController extends Controller
         );
 
         // si la accion es buscardor entonces significa que se debe recargar mediante ajax la tabla
+        $sucursales = DB::table('sucursales')->pluck('descripcion', 'id_sucursal');
+        $productos = DB::table('productos')->pluck('descripcion', 'id_producto');
+
+         // Verificamos si la petición es AJAX
         if ($request->ajax()) { //devuelve true o false si es ajax o no
             //solo llmamamos a table.blade.php y mediante compact pasamos la variable users
-            return view('stock.table')->with('stock', $stock);
+            return view('stock.table')->with('stock', $stock)->with('sucursales', $sucursales)->with('productos', $productos);
         }
 
 
-        return view('stock.index')->with('stock', $stock);
+        return view('stock.index')->with('stock', $stock)->with('sucursales', $sucursales)->with('productos', $productos);
     }
 }

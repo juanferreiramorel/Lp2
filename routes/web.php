@@ -41,6 +41,10 @@ Route::resource('cajas', App\Http\Controllers\CajaController::class);
 Route::resource('pedidos', App\Http\Controllers\PedidosController::class);
 Route::resource('compras', App\Http\Controllers\ComprasController::class);
 Route::resource('stock', App\Http\Controllers\StockController::class);
+Route::resource('auditoria', App\Http\Controllers\AuditoriaController::class);
+Route::resource('cobros', App\Http\Controllers\CobroController::class);
+Route::get('perfil', [App\Http\Controllers\UserController::class, 'perfil']);
+Route::post('users/perfil/cambiar-password', [App\Http\Controllers\UserController::class, 'cambiarPassword']);
 
 // Buscadores
 Route::get('buscar-productos', [App\Http\Controllers\VentaController::class, 'buscarProducto']);
@@ -55,6 +59,7 @@ Route::get('reporte-proveedores', [App\Http\Controllers\ReporteController::class
 Route::get('reporte-productos', [App\Http\Controllers\ReporteController::class, 'rpt_productos']);
 Route::get('reporte-sucursales', [App\Http\Controllers\ReporteController::class, 'rpt_sucursales']);
 Route::get('reporte-sucursales', [App\Http\Controllers\ReporteController::class, 'rpt_sucursales']);
+Route::get('reporte-ventas', [App\Http\Controllers\ReporteController::class, 'rpt_ventas']);
 
 // Roles y permisos
 Route::resource('permissions', App\Http\Controllers\PermissionController::class);
@@ -62,3 +67,15 @@ Route::resource('roles', App\Http\Controllers\RoleController::class);
 
 // Apertura y cierre de caja
 Route::resource('apertura-cierre-caja', App\Http\Controllers\AperturaCierreCajaController::class);
+
+## Ruta para imprimir factura
+Route::get('imprimir-factura/{id}', [App\Http\Controllers\VentaController::class, 'factura']);
+
+## Ruta para cerrar caja y recuperar los valores
+Route::get('apertura_cierre/editCierre/{id}',
+[App\Http\Controllers\AperturaCierreCajaController::class, 'editCierre']);
+
+## Ruta para guardar caja cerrada
+Route::get('apertura_cierre/cerrar_caja/{id}',
+[App\Http\Controllers\AperturaCierreCajaController::class, 'cerrar_caja']);
+

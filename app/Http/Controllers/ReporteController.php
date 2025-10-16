@@ -181,4 +181,74 @@ class ReporteController extends Controller
 
         return view('reportes.rpt_sucursales')->with('sucursales', $sucursales);
     }
+    public function rpt_ventas(Request $request)
+    {
+        // recibir datos del formulario a partir de la url get
+        $input = $request->all();
+
+        // definir variables para filtros
+        $filtro_cliente = "";
+        $filtro_desde = "";
+        $filtro_hasta = "";
+
+        if(!empty($input['cliente'])){
+            // concatenar los filtros y siempre dejar un espacio en blanco al comienzo del string " "
+            $filtro_cliente = " AND v.id_cliente = ".$input['cliente'];
+        }
+
+        // filtros desde y concatena el sql and
+        if(!empty($input['desde'])){
+            $filtro_desde = " AND v.fecha_venta >= '".$input['desde']."'";
+        }
+
+        // filtros hasta y concatena el sql correspondientes
+        if(!empty($input['hasta'])){
+            $filtro_hasta = " AND v.fecha_venta <= '".$input['hasta']."'";
+        }
+
+        // concatenar todos los filtros en el where si llega a recibir algun valor, por defecto esta where 1=1 que siempre sera true es para evitar fallo en la consulta normal
+        $ventas = DB::select("SELECT v.*, concat(c.clie_nombre, ' ', c.clie_apellido) as cliente, u.name as usuario, s.descripcion as sucursal
+            FROM ventas v 
+            JOIN clientes c ON v.id_cliente = c.id_cliente
+            JOIN users u ON v.user_id = u.id
+            JOIN sucursales s ON v.id_sucursal = s.id_sucursal
+            WHERE 1=1 ".$filtro_cliente." ".$filtro_desde." ".$filtro_hasta."
+            ORDER BY v.id_venta desc");
+
+        // recuperar detalles de venta
+        // definir array vacio para almacenar los detalles de venta
+        $array_detalles = array();
+        // validar que existan ventas
+        if(count($ventas) > 0){
+            // recorrer las ventas con foreach
+            foreach($ventas as $ven){
+                // consulta para recuperar los detalles de venta
+                $detalles = DB::select('SELECT dv.*, p.descripcion as producto
+                    FROM detalle_ventas dv
+                    LEFT JOIN productos p ON dv.id_producto = p.id_producto
+                    WHERE dv.id_venta = ?', [$ven->id_venta]);
+                // almacenar los detalles en el array con la llave del id_venta
+                $array_detalles[$ven->id_venta] = $detalles;
+            }
+        }
+
+        // validar que exista la variable input['exportar']
+        if(isset($input['exportar']) && $input['exportar'] == 'pdf'){
+            // crear pdf con loadView y utilizar la misma vista reportes rpt_ventas para convertir en pdf
+            $pdf = Pdf::loadView(
+                'reportes.pdf_ventas',
+                compact('ventas', 'array_detalles')
+            )
+            ->setPaper('a4', 'landscape');## especificar tamaño de hoja y disposición
+            # de hoja landscape=horizontal, portrait=vertical
+
+            // retornar la descarga del archivo
+            return $pdf->download("ReporteVentas.pdf");
+        }
+
+        // consulta para llenar el select de ciudad en reporte cliente
+        $clientes = DB::table('clientes')->selectRaw("concat(clie_nombre, ' ', clie_apellido) as cliente, id_cliente")->pluck('cliente', 'id_cliente');
+
+        return view('reportes.rpt_ventas')->with('ventas', $ventas)->with('clientes', $clientes);
+    }
 }

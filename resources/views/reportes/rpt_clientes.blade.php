@@ -41,7 +41,7 @@
                     <div class="form-group col-sm-2">
                         {!! Form::label('ciudad', 'Ciudad:') !!}
                         {!! Form::select('ciudad', $ciudades, request()->get('ciudad', null), [
-                            'class' => 'form-control',
+                            'class' => 'select2',
                             'placeholder' => 'Seleccione una ciudad',
                             'id' => 'ciudad',
                         ]) !!}

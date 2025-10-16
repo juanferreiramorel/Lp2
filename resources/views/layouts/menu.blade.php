@@ -77,6 +77,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="{{ url('auditoria') }}" class="nav-link {{ Request::is('auditoria*') ? 'active' : '' }}">
+                <i class="nav-icon fas fa-lock"></i>
+                <p>Auditoria</p>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ url('reporte-clientes') }}" class="nav-link {{ Request::is('reporte-clientes*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-users"></i>
                 <p>Reporte clientes</p>
@@ -98,6 +104,12 @@
             <a href="{{ url('reporte-sucursales') }}" class="nav-link {{ Request::is('reporte-sucursales*') ? 'active' : '' }}">
                 <i class="nav-icon fas fa-building"></i>
                 <p>Reporte sucursales</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ url('reporte-ventas') }}" class="nav-link {{ Request::is('reporte-ventas*') ? 'active' : '' }}">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Reporte ventas</p>
             </a>
         </li>
     </ul>
