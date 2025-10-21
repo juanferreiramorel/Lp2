@@ -224,6 +224,8 @@ class VentaController extends Controller
         // Recuperamos el usuario en session
         $user_id = auth()->user()->id;
         // Utilizamos insertGetId para obtener el ID de la venta registrada
+        //quitamos los puntos del total
+        $total = str_replace('.', '', $input['total']);
         // Agregar transacciones
         DB::beginTransaction();
         try {
@@ -235,7 +237,7 @@ class VentaController extends Controller
                 'fecha_venta' => $input['fecha_venta'],
                 'factura_nro' => $input['factura_nro'] ?? '0',
                 'user_id' => $user_id,
-                'total' => $input['total'] ?? 0,
+                'total' => $total ?? 0,
                 'id_sucursal' => $input['id_sucursal'],
                 'estado' => 'COMPLETADO',
                 'id_apertura' => $input['id_apertura'],

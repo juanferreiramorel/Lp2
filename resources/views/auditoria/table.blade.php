@@ -1,3 +1,4 @@
+
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table" id="productos-table">
@@ -21,7 +22,19 @@
                             <td>{{ $fila->operacion }}</td>
                             <td>{{ $fila->tabla }}</td>
                             <td>{{ $fila->fecha }}</td>
-                            <td></td>
+                            <td style="width: 120px">
+                                <div class='btn-group'>
+                                    <a class='btn btn-info btn-xs'
+                                        title="Ver diferencias"
+                                        onclick="verDiferencias(this)"
+                                        data-titulo="Auditoría #{{ $fila->id }} - {{ $fila->tabla }}"
+                                        data-operacion='{{ $fila->operacion }}'
+                                        data-anterior-b64='{{ base64_encode($fila->anterior ?? "{}") }}'
+                                        data-nuevo-b64='{{ base64_encode($fila->nuevo ?? "{}") }}'>
+                                        <i class="far fa-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -34,3 +47,5 @@
             </div>
         </div>
     </div>
+
+    @include('auditoria.modal')

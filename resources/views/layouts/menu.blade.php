@@ -35,6 +35,13 @@
         <p>Ventas</p>
     </a>
 </li>
+{{-- Cuentas A Cobrar --}}
+<li class="nav-item">
+    <a href="{{ route('cuentasacobrar.index') }}" class="nav-link {{ Request::is('cuentasacobrar*') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-money-bill-wave"></i>
+        <p>Cuentas A Cobrar</p>
+    </a>
+</li>
 
 {{-- Pedidos --}}
 <li class="nav-item">

@@ -18,7 +18,7 @@
         <div class="clearfix">
             <form id="form-busqueda">
                 <div class="row">
-                    <div class="form-group col-sm-2">
+                    <div class="form-group col-sm-3">
                         {!! Form::label('sucursales', 'Sucursal:') !!}
                         {!! Form::select('sucursales', $sucursales, request()->get('sucursales', null), [
                             'class' => 'select2',
@@ -26,7 +26,7 @@
                             'id' => 'sucursales',
                         ]) !!}
                     </div>
-                    <div class="form-group col-sm-2">
+                    <div class="form-group col-sm-3">
                         {!! Form::label('productos', 'Producto:') !!}
                         {!! Form::select('productos', $productos, request()->get('productos', null), [
                             'class' => 'select2',
@@ -35,7 +35,7 @@
                         ]) !!}
                     </div>
                     {{-- limpiar filtros --}}
-                    <div class="form-group col-sm-1">
+                    <div class="form-group col-sm-2">
                         <button class="btn btn-default" type="button" 
                             style="margin-top:32px"
                             id="btn-limpiar"

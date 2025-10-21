@@ -9,6 +9,12 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class AuditoriaController extends Controller
 {
+    private $path;
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('permission:auditoria index')->only(['index']);
+    }
     public function index(Request $request)
     {
         // Obtener el término de búsqueda del request
@@ -32,7 +38,9 @@ class AuditoriaController extends Controller
                 u.name AS usuario,
                 s.operation AS operacion,
                 s.table_name AS tabla,
-                s.changed_at AS fecha
+                s.changed_at AS fecha,
+                old_data AS anterior,
+                new_data AS nuevo
                 FROM audit.log s
             JOIN users u ON s.user_id = u.id
              JOIN sucursales sc USING(id_sucursal)
