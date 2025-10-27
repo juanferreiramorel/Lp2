@@ -33,7 +33,7 @@ class CuentasACobrarController extends Controller
         
         // Consulta para obtener los productos con la marca asociada y si posee filtros
         $cuentasacobrar = DB::select(
-            'SELECT nro_cuenta, CONCAT(clie_nombre,\' \',clie_apellido) AS cliente, factura_nro, fecha_venta, 
+            'SELECT id_cta AS nro_cuenta, CONCAT(clie_nombre,\' \',clie_apellido) AS cliente, factura_nro, fecha_venta, 
             importe, ca.estado, vencimiento, nro_cuota AS nro_cuotas
             FROM cuentas_a_cobrar ca
             JOIN clientes USING(id_cliente)
