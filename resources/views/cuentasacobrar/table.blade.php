@@ -20,8 +20,16 @@
                             <td>{{ $fila->cliente }}</td>
                             <td>{{ $fila->factura_nro }}</td>
                             <td>{{ $fila->fecha_venta }}</td>
-                            <td>{{ $fila->importe }}</td>
-                            <td>{{ $fila->estado }}</td>
+                            <td>{{ number_format($fila->importe?? 0, 0, ',', '.') }}</td>
+                            <td>
+                            @if ($fila->estado == 'PENDIENTE')
+                                <span class="badge badge-warning">{{ $fila->estado  }}</span>
+                            @else
+                                <span class="badge ">{{ $fila->estado  }}</span>
+                            @endif
+                            
+                            </td>
+                            
                             <td>{{ $fila->vencimiento }}</td>
                             <td>{{ $fila->nro_cuotas }}</td>
                         </tr>

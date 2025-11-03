@@ -70,9 +70,15 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- Bootstrap ahora está cargado en el layout principal --}}
     <script>
         $(document).ready(function() {
+            // Verificar que Bootstrap modal esté disponible
+            if (typeof $.fn.modal === 'undefined') {
+                console.error('Bootstrap modal no está disponible. Verifica que Bootstrap esté cargado.');
+                return;
+            }
+
             $("#cerrar").on("click", function(e) {
                 e.preventDefault();
                 e.stopPropagation();

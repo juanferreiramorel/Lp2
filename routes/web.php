@@ -80,3 +80,6 @@ Route::get('apertura_cierre/editCierre/{id}',
 Route::get('apertura_cierre/cerrar_caja/{id}',
 [App\Http\Controllers\AperturaCierreCajaController::class, 'cerrar_caja']);
 
+
+## Ruta para exportar cargos a excel Ejemplo
+Route::post('exportar-cargos', [App\Http\Controllers\ReporteController::class, 'exportar']);

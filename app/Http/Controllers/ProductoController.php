@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Pagination\LengthAwarePaginator;             
-use RealRashid\SweetAlert\Facades\Alert;
+use Laracasts\Flash\Flash;
+use Illuminate\Pagination\LengthAwarePaginator;// libreria a importar para paginacion manual
 
 class ProductoController extends Controller
 {
@@ -18,6 +17,11 @@ class ProductoController extends Controller
         $this->middleware('auth');
         // Definir Path para grabar mi archivo recibido
         $this->path = public_path() . "/img/productos/";
+        // permisos
+        $this->middleware('permission:productos index')->only(['index']);
+        $this->middleware('permission:productos create')->only(['create', 'store']);
+        $this->middleware('permission:productos edit')->only(['edit', 'update']);
+        $this->middleware('permission:productos destroy')->only(['destroy']);
 
     }
     public function index(Request $request)
@@ -63,7 +67,7 @@ class ProductoController extends Controller
         );
 
         // si la accion es buscardor entonces significa que se debe recargar mediante ajax la tabla
-        if ($request->ajax()) { //devuelve true o false si es ajax o no
+        if ($request->ajax()) {// devuelve true o false si es ajax o no
             //solo llmamamos a table.blade.php y mediante compact pasamos la variable users
             return view('productos.table')->with('productos', $productos);
         }
@@ -145,7 +149,7 @@ class ProductoController extends Controller
         );
 
         // Redirigir a la lista de productos con un mensaje de éxito
-        Alert::toast('Producto creado correctamente.', 'success');
+        Flash::success('Producto creado correctamente.');
 
         return redirect(route('productos.index'));
     }
@@ -156,7 +160,7 @@ class ProductoController extends Controller
 
         // Si el producto no existe, redirigir con un mensaje de error
         if (empty($productos)) {
-            Alert::toast('Producto no encontrado.', 'error');
+            Flash::error('Producto no encontrado.');
             return redirect(route('productos.index'));
         }
 
@@ -182,7 +186,7 @@ class ProductoController extends Controller
 
         // Si el producto no existe, redirigir con un mensaje de error
         if (empty($productos)) {
-            Alert::toast('Producto no encontrado.', 'error');
+            Flash::error('Producto no encontrado.');
             return redirect(route('productos.index'));
         }
 
@@ -240,7 +244,7 @@ class ProductoController extends Controller
         );
 
         // Redirigir a la lista de productos con un mensaje de éxito
-        Alert::toast('Producto actualizado correctamente.', 'success');
+        Flash::success('Producto actualizado correctamente.');
 
         return redirect(route('productos.index'));
     }
@@ -251,7 +255,7 @@ class ProductoController extends Controller
         $producto = DB::selectOne('SELECT * FROM productos WHERE id_producto = ?', [$id]);
 
         if (empty($producto)) {
-            Alert::toast('Producto no encontrado.', 'error');
+            Flash::error('Producto no encontrado.');
             return redirect(route('productos.index'));
         }
 
@@ -259,7 +263,7 @@ class ProductoController extends Controller
         DB::delete('DELETE FROM productos WHERE id_producto = ?', [$id]);
 
         // Redirigir a la lista de productos con un mensaje de éxito
-        Alert::toast('Producto eliminado correctamente.', 'success');
+        Flash::success('Producto eliminado correctamente.');
 
         return redirect(route('productos.index'));
     }

@@ -104,7 +104,7 @@
     </div>
 @endsection
 
-@push('page_scripts')
+@push('scripts')
     <script type="text/javascript">
         $(document).ready(function() {
             // boton para limpiar los filtros

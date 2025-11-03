@@ -17,6 +17,16 @@ use function Laravel\Prompts\error;
 
 class VentaController extends Controller
 {
+    public function __construct()
+    {
+        // validar que el usuario este autenticado
+        $this->middleware('auth');
+        // validar permisos para cada accion
+        $this->middleware('permission:ventas index')->only(['index']);
+        $this->middleware('permission:ventas create')->only(['create', 'store']);
+        $this->middleware('permission:ventas edit')->only(['edit', 'update']);
+        $this->middleware('permission:ventas destroy')->only(['destroy']);
+    } 
     public function index(Request $request)
     {
         $buscar = $request->get('buscar');
@@ -224,8 +234,6 @@ class VentaController extends Controller
         // Recuperamos el usuario en session
         $user_id = auth()->user()->id;
         // Utilizamos insertGetId para obtener el ID de la venta registrada
-        //quitamos los puntos del total
-        $total = str_replace('.', '', $input['total']);
         // Agregar transacciones
         DB::beginTransaction();
         try {
@@ -237,7 +245,7 @@ class VentaController extends Controller
                 'fecha_venta' => $input['fecha_venta'],
                 'factura_nro' => $input['factura_nro'] ?? '0',
                 'user_id' => $user_id,
-                'total' => $total ?? 0,
+                'total' => $input['total'] ?? 0,
                 'id_sucursal' => $input['id_sucursal'],
                 'estado' => 'COMPLETADO',
                 'id_apertura' => $input['id_apertura'],

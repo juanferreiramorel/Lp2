@@ -41,7 +41,7 @@
                     <div class="form-group col-sm-2">
                         {!! Form::label('ciudad', 'Ciudad:') !!}
                         {!! Form::select('ciudad', $ciudades, request()->get('ciudad', null), [
-                            'class' => 'select2',
+                            'class' => 'form-control',
                             'placeholder' => 'Seleccione una ciudad',
                             'id' => 'ciudad',
                         ]) !!}
@@ -67,6 +67,12 @@
                             title="Exportar a PDF" style="margin-top:30px">
                             <i class="fas fa-print"></i> PDF
                         </button>
+
+                        <button class="btn btn-primary" id="btn-exportar-excel" type="button" 
+                            data-toggle="tooltip"
+                            title="Exportar a Excel" style="margin-top:30px">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -85,7 +91,7 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- Bootstrap ya está incluido en AdminLTE --}}
     <script>
         $(document).ready(function() {
             // llamar a la función tooltip
@@ -115,6 +121,13 @@
                 e.preventDefault();
                 window.open('{{ url('reporte-clientes') }}?desde=' + $('#desde').val() +
                     '&hasta=' + $('#hasta').val() + '&exportar=pdf' + '&ciudad=' + $('#ciudad').val(), '_blank');
+            });
+
+            // boton para generar la exportación a excel del reporte
+            $('#btn-exportar-excel').click(function(e) {
+                e.preventDefault();
+                window.open('{{ url('reporte-clientes') }}?desde=' + $('#desde').val() +
+                    '&hasta=' + $('#hasta').val() + '&exportar=excel' + '&ciudad=' + $('#ciudad').val(), '_blank');
             });
         });
     </script>

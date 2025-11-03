@@ -4,21 +4,72 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Laracasts\Flash\Flash;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class ClienteController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clientes = DB::select('
+        // Buscar
+        $buscar = $request->get('buscar');
+
+        if ($buscar) {
+            $clientes = DB::select(
+                '
             SELECT c.*, ciu.descripcion as ciudad,
             d.descripcion as departamento
             FROM clientes c
-            JOIN ciudades ciu ON ciu.id_ciudad = c.id_ciudad
-            JOIN departamentos d ON d.id_departamento = c.id_departamento
-        ');
+                JOIN ciudades ciu ON ciu.id_ciudad = c.id_ciudad
+                JOIN departamentos d ON d.id_departamento = c.id_departamento
+            WHERE c.clie_nombre ILIKE ? OR c.clie_apellido ILIKE ? 
+                    OR c.clie_ci ILIKE ? OR c.id_cliente::text ILIKE ?',
+                [
+                    '%' . $buscar . '%',
+                    '%' . $buscar . '%',
+                    '%' . $buscar . '%',
+                    '%' . $buscar . '%'
+                ]
+            );
+        } else {
+            $clientes = DB::select('
+                SELECT c.*, ciu.descripcion as ciudad,
+                d.descripcion as departamento
+                FROM clientes c
+                JOIN ciudades ciu ON ciu.id_ciudad = c.id_ciudad
+                JOIN departamentos d ON d.id_departamento = c.id_departamento
+            ');
+        }
+
+        // Definimos los valores de paginación
+        $page = $request->input('page', 1);   // página actual (por defecto 1)
+        $perPage = 10;                        // cantidad de registros por página
+        $total = count($clientes);           // total de registros
+
+        // Cortamos el array para solo devolver los registros de la página actual
+        $items = array_slice($clientes, ($page - 1) * $perPage, $perPage);
+
+        // Creamos el paginador manualmente
+        $clientes = new LengthAwarePaginator(
+            $items,        // registros de esta página
+            $total,        // total de registros
+            $perPage,      // registros por página
+            $page,         // página actual
+            [
+                'path'  => $request->url(),     // mantiene la ruta base
+                'query' => $request->query(),   // mantiene parámetros como "buscar"
+            ]
+        );
+
+        // si la accion es buscardor entonces significa que se debe recargar mediante ajax la tabla
+        if ($request->ajax()) {
+            //solo llmamamos a table.blade.php y mediante compact pasamos la variable users
+            return view('clientes.table')->with('clientes', $clientes);
+        }
+
 
         return view('clientes.index')->with('clientes', $clientes);
     }
@@ -30,7 +81,7 @@ class ClienteController extends Controller
         $departamentos = DB::table('departamentos')->pluck('descripcion', 'id_departamento');
 
         return view('clientes.create')->with('ciudades', $ciudades)
-                                      ->with('departamentos', $departamentos);
+            ->with('departamentos', $departamentos);
     }
 
     public function store(Request $request)
@@ -41,64 +92,69 @@ class ClienteController extends Controller
         # Parsear la fecha de nacimiento input clie_fecha_nac
         $fecha_nac = Carbon::parse($input['clie_fecha_nac']);
 
-        $validacion = Validator::make($input, [
-            'clie_nombre.required',
-            'clie_apellido.required',
-            #'clie_ci.required|unique:clientes,clie_ci|max:8',
-            'clie_fecha_nac.required|date',
-            'id_departamento.required|exists:departamentos,id_departamento',
-            'id_ciudad.required|exists:ciudades,id_ciudad',
-        ],
-        [
-            'clie_nombre.required' => 'Campo nombre obligatorio',
-            'clie_apellido.required' => 'Campo apellido obligatorio',
-            'clie_ci.required' => 'Campo CI obligatorio',
-            'clie_ci.unique' => 'El dato de CI ya existe',
-            #'clie_ci.max' => 'El campo CI debe tener como máximo 8 caracteres',
-            'clie_fecha_nac.required' => 'Campo fecha de nacimiento obligatorio',
-            'clie_fecha_nac.date' => 'Campo fecha de nacimiento debe ser una fecha válida',
-            'id_departamento.required' => 'Campo departamento obligatorio',
-            'id_departamento.exists' => 'Campo departamento debe ser un departamento válido',
-            'id_ciudad.required' => 'Campo ciudad obligatorio',
-            'id_ciudad.exists' => 'Campo ciudad debe ser una ciudad válida',
-        ]);
+        $validacion = Validator::make(
+            $input,
+            [
+                'clie_nombre.required',
+                'clie_apellido.required',
+                #'clie_ci.required|unique:clientes,clie_ci|max:8',
+                'clie_fecha_nac.required|date',
+                'id_departamento.required|exists:departamentos,id_departamento',
+                'id_ciudad.required|exists:ciudades,id_ciudad',
+            ],
+            [
+                'clie_nombre.required' => 'Campo nombre obligatorio',
+                'clie_apellido.required' => 'Campo apellido obligatorio',
+                'clie_ci.required' => 'Campo CI obligatorio',
+                'clie_ci.unique' => 'El dato de CI ya existe',
+                #'clie_ci.max' => 'El campo CI debe tener como máximo 8 caracteres',
+                'clie_fecha_nac.required' => 'Campo fecha de nacimiento obligatorio',
+                'clie_fecha_nac.date' => 'Campo fecha de nacimiento debe ser una fecha válida',
+                'id_departamento.required' => 'Campo departamento obligatorio',
+                'id_departamento.exists' => 'Campo departamento debe ser un departamento válido',
+                'id_ciudad.required' => 'Campo ciudad obligatorio',
+                'id_ciudad.exists' => 'Campo ciudad debe ser una ciudad válida',
+            ]
+        );
 
         ##validar edad del cliente
         $edad = $fec_actual->diffInYears($fecha_nac);
         if ($edad < 18) {
-            Alert::error('Error', 'El cliente debe ser mayor de 18 años.');
+            Flash::error('El cliente debe ser mayor de 18 años.');
             return redirect(route('clientes.create'))->withInput();
         }
 
         ## validar fecha mayor al actual
         if ($fecha_nac > $fec_actual) {
+            // Flash::error('La fecha de nacimiento no puede ser mayor a la fecha actual.');
             Alert::error('Error', 'La fecha de nacimiento no puede ser mayor a la fecha actual.');
             return redirect(route('clientes.create'))->withInput();
         }
 
         ##validar cantidad de digitos del campo ci
         $ci = strlen($input['clie_ci']); // utilizar strlen para contar caracteres
-        if ($ci > 8) {# mayor a 8 caracteres
+        if ($ci > 8) { # mayor a 8 caracteres
+            // Flash::error('El nro de cedula solo podra contener 8 digítos.');
             Alert::error('Error', 'El nro de cedula solo podra contener 8 digítos.');
             return redirect(route('clientes.create'))->withInput();
         }
 
         # insertar datos en clientes
         DB::insert('INSERT INTO clientes (clie_nombre, clie_apellido, clie_ci, clie_telefono, clie_direccion, clie_fecha_nac, id_departamento, id_ciudad) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
-            $input['clie_nombre'],
-            $input['clie_apellido'],
+            strtoupper($input['clie_nombre']),
+            strtoupper($input['clie_apellido']),
             $input['clie_ci'],
             $input['clie_telefono'],
-            $input['clie_direccion'],
+            strtoupper($input['clie_direccion']),
             $input['clie_fecha_nac'],
             $input['id_departamento'],
             $input['id_ciudad']
         ]);
 
-        Alert::success('Éxito', 'Cliente creado correctamente.');
+        // Flash::success('Cliente creado correctamente.');
+        Alert::success('Exito', 'Cliente creado correctamente.');
 
         return redirect(route('clientes.index'));
-
     }
 
     public function edit($id)
@@ -107,6 +163,7 @@ class ClienteController extends Controller
         $clientes = DB::selectOne('SELECT * FROM clientes WHERE id_cliente = ?', [$id]);
 
         if (empty($clientes)) {
+            // Flash::error('Cliente no encontrado.');
             Alert::error('Error', 'Cliente no encontrado.');
             return redirect(route('clientes.index'));
         }
@@ -116,8 +173,8 @@ class ClienteController extends Controller
         $departamentos = DB::table('departamentos')->pluck('descripcion', 'id_departamento');
 
         return view('clientes.edit')->with('clientes', $clientes)
-                                     ->with('ciudades', $ciudades)
-                                     ->with('departamentos', $departamentos);
+            ->with('ciudades', $ciudades)
+            ->with('departamentos', $departamentos);
     }
 
     public function update(Request $request, $id)
@@ -127,6 +184,7 @@ class ClienteController extends Controller
         $clientes = DB::selectOne('SELECT * FROM clientes WHERE id_cliente = ?', [$id]);
 
         if (empty($clientes)) {
+            // Flash::error('Cliente no encontrado.');
             Alert::error('Error', 'Cliente no encontrado.');
             return redirect(route('clientes.index'));
         }
@@ -137,29 +195,33 @@ class ClienteController extends Controller
         $fecha_nac = Carbon::parse($input['clie_fecha_nac']);
 
         // Validaciones
-        $validacion = Validator::make($input, [
-            'clie_nombre.required',
-            'clie_apellido.required',
-            #'clie_ci.required|unique:clientes,clie_ci|max:8',
-            'clie_fecha_nac.required|date',
-            'id_departamento.required|exists:departamentos,id_departamento',
-            'id_ciudad.required|exists:ciudades,id_ciudad',
-        ],
-        [
-            'clie_nombre.required' => 'Campo nombre obligatorio',
-            'clie_apellido.required' => 'Campo apellido obligatorio',
-            'clie_ci.required' => 'Campo CI obligatorio',
-            'clie_ci.unique' => 'El dato de CI ya existe',
-            #'clie_ci.max' => 'El campo CI debe tener como máximo 8 caracteres',
-            'clie_fecha_nac.required' => 'Campo fecha de nacimiento obligatorio',
-            'clie_fecha_nac.date' => 'Campo fecha de nacimiento debe ser una fecha válida',
-            'id_departamento.required' => 'Campo departamento obligatorio',
-            'id_departamento.exists' => 'Campo departamento debe ser un departamento válido',
-            'id_ciudad.required' => 'Campo ciudad obligatorio',
-            'id_ciudad.exists' => 'Campo ciudad debe ser una ciudad válida',
-        ]);
+        $validacion = Validator::make(
+            $input,
+            [
+                'clie_nombre.required',
+                'clie_apellido.required',
+                #'clie_ci.required|unique:clientes,clie_ci|max:8',
+                'clie_fecha_nac.required|date',
+                'id_departamento.required|exists:departamentos,id_departamento',
+                'id_ciudad.required|exists:ciudades,id_ciudad',
+            ],
+            [
+                'clie_nombre.required' => 'Campo nombre obligatorio',
+                'clie_apellido.required' => 'Campo apellido obligatorio',
+                'clie_ci.required' => 'Campo CI obligatorio',
+                'clie_ci.unique' => 'El dato de CI ya existe',
+                #'clie_ci.max' => 'El campo CI debe tener como máximo 8 caracteres',
+                'clie_fecha_nac.required' => 'Campo fecha de nacimiento obligatorio',
+                'clie_fecha_nac.date' => 'Campo fecha de nacimiento debe ser una fecha válida',
+                'id_departamento.required' => 'Campo departamento obligatorio',
+                'id_departamento.exists' => 'Campo departamento debe ser un departamento válido',
+                'id_ciudad.required' => 'Campo ciudad obligatorio',
+                'id_ciudad.exists' => 'Campo ciudad debe ser una ciudad válida',
+            ]
+        );
 
         if ($validacion->fails()) {
+            // Flash::error('Error en la validación de datos.');
             Alert::error('Error', 'Error en la validación de datos.');
             return redirect()->back()->withErrors($validacion)->withInput();
         }
@@ -167,24 +229,27 @@ class ClienteController extends Controller
         ##validar edad del cliente
         $edad = $fec_actual->diffInYears($fecha_nac);
         if ($edad < 18 || $fecha_nac > $fec_actual) {
+            // Flash::error('El cliente debe ser mayor de 18 años y la fecha de nacimiento no puede ser mayor a la fecha actual.');
             Alert::error('Error', 'El cliente debe ser mayor de 18 años y la fecha de nacimiento no puede ser mayor a la fecha actual.');
             return redirect()->back()->withInput();
         }
 
         ## validar fecha mayor al actual
         // if ($fecha_nac > $fec_actual) {
-        //     Alert::error('Error', 'La fecha de nacimiento no puede ser mayor a la fecha actual.');
+        //     Flash::error('La fecha de nacimiento no puede ser mayor a la fecha actual.');
         //     return redirect()->back()->withInput();
         // }
 
         ##validar cantidad de digitos del campo ci
         $ci = strlen($input['clie_ci']); // utilizar strlen para contar caracteres
-        if ($ci > 8) {# mayor a 8 caracteres
+        if ($ci > 8) { # mayor a 8 caracteres
+            // Flash::error('El nro de cedula solo podra contener 8 digítos.');
             Alert::error('Error', 'El nro de cedula solo podra contener 8 digítos.');
             return redirect(route('clientes.edit', $id))->withInput();
         }
 
-        DB::update('UPDATE clientes SET 
+        DB::update(
+            'UPDATE clientes SET 
             clie_nombre = ?, 
             clie_apellido = ?, 
             clie_ci = ?, 
@@ -193,21 +258,22 @@ class ClienteController extends Controller
             clie_fecha_nac = ?, 
             id_departamento = ?, 
             id_ciudad = ? 
-        WHERE id_cliente = ?', 
-        [
-            $input['clie_nombre'],
-            $input['clie_apellido'],
-            $input['clie_ci'],
-            $input['clie_telefono'],
-            $input['clie_direccion'],
-            $input['clie_fecha_nac'],
-            $input['id_departamento'],
-            $input['id_ciudad'],
-            $id
-        ]);
+        WHERE id_cliente = ?',
+            [
+                $input['clie_nombre'],
+                $input['clie_apellido'],
+                $input['clie_ci'],
+                $input['clie_telefono'],
+                $input['clie_direccion'],
+                $input['clie_fecha_nac'],
+                $input['id_departamento'],
+                $input['id_ciudad'],
+                $id
+            ]
+        );
 
-        Alert::success('Éxito', 'Cliente actualizado correctamente.');
-
+        // Flash::success('Cliente actualizado correctamente.');
+        Alert::success('Exito', 'Cliente actualizado correctamente.');
         return redirect(route('clientes.index'));
     }
 
@@ -215,15 +281,17 @@ class ClienteController extends Controller
     {
         $clientes = DB::selectOne('SELECT * FROM clientes WHERE id_cliente = ?', [$id]);
 
-        if(empty($clientes)) {
+        if (empty($clientes)) {
+            // Flash::error('Cliente no encontrado.');
             Alert::error('Error', 'Cliente no encontrado.');
             return redirect(route('clientes.index'));
         }
         # Utilizaremos try catch en clientes 
         try {
             DB::delete('DELETE FROM clientes WHERE id_cliente = ?', [$id]);
-            Alert::success('Éxito', 'Cliente eliminado correctamente.');
-        } catch (\Exception $e) {// excepcion capturada desde la base de datos
+            // Flash::success('Cliente eliminado correctamente.');
+            Alert::success('Exito', 'Cliente eliminado correctamente.');
+        } catch (\Exception $e) { // excepcion capturada desde la base de datos
             Alert::error('Error', 'Error al eliminar el cliente. Por motivo: ' . $e->getMessage());
         }
 

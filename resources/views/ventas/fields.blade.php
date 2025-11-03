@@ -105,7 +105,7 @@
 
 <!-- Js -->
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    {{-- Bootstrap ya está incluido en AdminLTE --}}
     <script>
         // comenzar la carga con document ready
         $(document).ready(function() {
