@@ -1,252 +1,575 @@
-<x-laravel-ui-adminlte::adminlte-layout>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - {{ config('app.name') }}</title>
 
-    <body class="hold-transition login-page" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); font-family: 'Poppins', sans-serif;">
-        <style>
-            /* Particles layer */
-            #particles-js {
-                position: fixed;
-                top: 0; left: 0;
-                width: 100%; height: 100%;
-                z-index: 0;                 /* detrás del contenido */
-                pointer-events: none;       /* no bloquear clics */
-            }
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-            .login-box {
-                width: 400px;
-                margin: 6% auto;
-                animation: fadeIn 0.7s ease-in-out;
-                position: relative;
-                z-index: 1;                 /* encima de partículas */
-            }
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-            .card {
-                border-radius: 15px;
-                background: rgba(255, 255, 255, 0.08);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                border: 1px solid rgba(255, 255, 255, 0.2);
-            }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-            .login-card-body {
-                border-radius: 15px;
-                padding: 30px;
-                color: #fff;
-            }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
 
-            .login-logo a {
-                color: #fff !important;
-                font-weight: bold;
-                font-size: 28px;
-                text-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
-            }
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
 
-            .login-box-msg {
-                font-size: 18px;
-                font-weight: 500;
-                margin-bottom: 20px;
-                color: #e0e0e0;
-            }
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            animation: animate 25s linear infinite;
+            bottom: -150px;
+        }
 
-            .input-group-text {
-                background: rgba(255, 255, 255, 0.15);
-                border: none;
-                color: #fff;
-            }
+        .bg-animation span:nth-child(1) {
+            left: 25%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 0s;
+        }
 
-            .btn-primary {
-                background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
-                border: none;
-                border-radius: 10px;
-                padding: 10px;
-                font-size: 16px;
-                font-weight: bold;
-                transition: all 0.3s ease-in-out;
-            }
+        .bg-animation span:nth-child(2) {
+            left: 10%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
 
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
-            }
+        .bg-animation span:nth-child(3) {
+            left: 70%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 4s;
+        }
 
-            a { color: #93c5fd; text-decoration: none; }
-            a:hover { color: #bfdbfe; }
+        .bg-animation span:nth-child(4) {
+            left: 40%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
 
-            @keyframes fadeIn {
-                0% { opacity: 0; transform: translateY(-20px); }
-                100% { opacity: 1; transform: translateY(0); }
-            }
+        .bg-animation span:nth-child(5) {
+            left: 65%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 0s;
+        }
 
-            /* Fondo y fuente principal */
-            body {
-                background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-                font-family: 'Poppins', sans-serif;
-                color: #e2e8f0;
-            }
+        .bg-animation span:nth-child(6) {
+            left: 75%;
+            width: 110px;
+            height: 110px;
+            animation-delay: 3s;
+        }
 
-            /* Card transparente con efecto glass */
-            .login-card-body {
-                background: rgba(255, 255, 255, 0.08);
-                border-radius: 15px;
-                backdrop-filter: blur(10px);
-                color: #f8fafc;
-            }
+        .bg-animation span:nth-child(7) {
+            left: 35%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 7s;
+        }
 
-            /* Inputs */
-            .form-control {
-                background: transparent !important;
-                border: none;
-                border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+        .bg-animation span:nth-child(8) {
+            left: 50%;
+            width: 25px;
+            height: 25px;
+            animation-delay: 15s;
+            animation-duration: 45s;
+        }
+
+        .bg-animation span:nth-child(9) {
+            left: 20%;
+            width: 15px;
+            height: 15px;
+            animation-delay: 2s;
+            animation-duration: 35s;
+        }
+
+        .bg-animation span:nth-child(10) {
+            left: 85%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 0s;
+            animation-duration: 11s;
+        }
+
+        @keyframes animate {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
                 border-radius: 0;
-                padding: 10px 5px;
-                font-size: 15px;
-                color: #ffffff;
-                transition: border-color 0.3s ease;
             }
-            .form-control:focus {
-                border-bottom: 2px solid #4da3ff;
-                outline: none;
-                color: #ffffff;
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
             }
-            .form-control::placeholder {
-                color: rgba(255, 255, 255, 0.8);
-                font-weight: 500;
+        }
+
+        /* Particles layer */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: auto; /* Permitir interacción con las partículas */
+        }
+
+        /* Login container */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 450px;
+            max-width: 90%;
+            animation: slideInDown 0.8s ease-out;
+            pointer-events: auto; /* Asegurar que el formulario sea clickeable */
+        }
+
+        /* Asegurar que todos los elementos interactivos del login funcionen */
+        .login-card,
+        .login-card * {
+            pointer-events: auto;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo section */
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .login-logo i {
+            font-size: 60px;
+            color: #fff;
+            margin-bottom: 15px;
+            display: block;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-logo h1 {
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            margin: 0;
+        }
+
+        .login-logo p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-top: 8px;
+        }
+
+        /* Card */
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Alert messages */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.5s ease-out;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert i {
+            font-size: 20px;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fff;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #fff;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #fff;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+
+        /* Form groups */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .form-control:focus + .input-icon {
+            color: #fff;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-control.is-invalid {
+            border-color: rgba(239, 68, 68, 0.6);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #fca5a5;
+            font-size: 13px;
+            margin-top: 8px;
+            margin-left: 5px;
+            font-weight: 500;
+        }
+
+        /* Button */
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(245, 87, 108, 0.6);
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        /* Links */
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .login-footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .login-footer a:hover {
+            color: #f093fb;
+            text-shadow: 0 0 10px rgba(240, 147, 251, 0.5);
+        }
+
+        /* Autocomplete fix */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus {
+            -webkit-box-shadow: 0 0 0 30px rgba(255, 255, 255, 0.1) inset !important;
+            -webkit-text-fill-color: #fff !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .login-card {
+                padding: 30px 25px;
             }
 
-            /* Íconos */
-            .input-group-text {
-                background: transparent;
-                border: none;
-                color: #a7c7ff;
+            .login-logo h1 {
+                font-size: 28px;
             }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-animation">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
 
-            /* Botón */
-            .btn-primary {
-                background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%);
-                border: none;
-                border-radius: 8px;
-                padding: 10px;
-                font-size: 16px;
-                font-weight: 600;
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 5px 15px rgba(0, 114, 255, 0.4);
-            }
+    <!-- Particles -->
+    <div id="particles-js"></div>
 
-            /* Evitar estilos feos de autocomplete */
-            input:-webkit-autofill,
-            input:-webkit-autofill:hover,
-            input:-webkit-autofill:focus,
-            input:-webkit-autofill:active {
-                -webkit-box-shadow: 0 0 0 30px rgba(0, 0, 0, 0) inset !important;
-                -webkit-text-fill-color: #ffffff !important;
-                background: transparent !important;
-                transition: background-color 5000s ease-in-out 0s;
-            }
-        </style>
-
-        <!-- Capa de partículas -->
-        <div id="particles-js"></div>
-
-        <div class="login-box">
-            <div class="login-logo">
-                <a href="{{ url('/home') }}">{{ config('app.name') }}</a>
-            </div>
-
-            <div class="card">
-                <div class="card-body login-card-body">
-                    <p class="login-box-msg">Inicia sesión para continuar</p>
-
-                    <form method="POST" action="{{ url('/login') }}">
-                        @csrf
-
-                        <!-- Email -->
-                        <div class="input-group mb-3">
-                            <input type="email" name="email" value="{{ old('email') }}" placeholder="Correo electrónico"
-                                class="form-control @error('email') is-invalid @enderror">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-envelope"></span>
-                                </div>
-                            </div>
-                            @error('email')
-                                <span class="error invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <!-- Password -->
-                        <div class="input-group mb-3">
-                            <input type="password" name="password" placeholder="Contraseña"
-                                class="form-control @error('password') is-invalid @enderror">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-lock"></span>
-                                </div>
-                            </div>
-                            @error('password')
-                                <span class="error invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <!-- Botón -->
-                        <div class="row">
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <p class="mb-0 mt-3">
-                        <a href="{{ route('register') }}">Crear una cuenta</a>
-                    </p>
-                </div>
-            </div>
+    <!-- Login container -->
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="login-logo">
+            <i class="fas fa-user-circle"></i>
+            <h1>{{ config('app.name') }}</h1>
+            <p>Bienvenido de nuevo</p>
         </div>
 
-        <!-- particles.js (CDN) -->
-        <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                /* Config elegante acorde a tu paleta */
-                particlesJS('particles-js', {
-                    particles: {
-                        number: { value: 120, density: { enable: true, value_area: 900 } },
-                        color: { value: '#93c5fd' },
-                        shape: { type: 'circle' },
-                        opacity: { value: 0.25 },
-                        size: { value: 3, random: true },
-                        line_linked: {
-                            enable: true,
-                            distance: 140,
-                            color: '#93c5fd',
-                            opacity: 0.25,
-                            width: 1
-                        },
-                        move: {
-                            enable: true,
-                            speed: 1.2,
-                            direction: 'none',
-                            random: false,
-                            straight: false,
-                            out_mode: 'out'
-                        }
+        <!-- Card -->
+        <div class="login-card">
+            <!-- Flash messages (Info from controller) -->
+            @if(session('flash_notification'))
+                @foreach(session('flash_notification') as $message)
+                    <div class="alert alert-{{ $message['level'] }}">
+                        <i class="fas fa-{{ $message['level'] == 'info' ? 'info-circle' : ($message['level'] == 'danger' ? 'exclamation-triangle' : 'check-circle') }}"></i>
+                        <span>{{ $message['message'] }}</span>
+                    </div>
+                @endforeach
+            @endif
+
+            <!-- Validation errors -->
+            @if($errors->any())
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        @foreach($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <!-- Login form -->
+            <form method="POST" action="{{ url('/login') }}">
+                @csrf
+
+                <!-- Email -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input
+                            type="email"
+                            name="email"
+                            value="{{ old('email') }}"
+                            placeholder="Correo electrónico"
+                            class="form-control @error('email') is-invalid @enderror"
+                            autofocus
+                        >
+                        <i class="fas fa-envelope input-icon"></i>
+                    </div>
+                    @error('email')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Contraseña"
+                            class="form-control @error('password') is-invalid @enderror"
+                        >
+                        <i class="fas fa-lock input-icon"></i>
+                    </div>
+                    @error('password')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="login-footer">
+                <a href="{{ route('register') }}">
+                    <i class="fas fa-user-plus"></i> Crear una cuenta nueva
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 100,
+                    density: { enable: true, value_area: 800 }
+                },
+                color: { value: '#ffffff' },
+                shape: {
+                    type: ['circle', 'triangle'],
+                    stroke: { width: 0, color: '#000000' }
+                },
+                opacity: {
+                    value: 0.4,
+                    random: true,
+                    anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                },
+                size: {
+                    value: 4,
+                    random: true,
+                    anim: { enable: true, speed: 2, size_min: 0.3, sync: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#ffffff',
+                    opacity: 0.3,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2.5,
+                    direction: 'none',
+                    random: true,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: { enable: true, rotateX: 600, rotateY: 1200 }
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: ['grab', 'bubble']
                     },
-                    interactivity: {
-                        detect_on: 'canvas',
-                        events: {
-                            onhover: { enable: true, mode: 'repulse' },
-                            onclick: { enable: false, mode: 'push' },
-                            resize: true
-                        },
-                        modes: {
-                            repulse: { distance: 100, duration: 0.4 }
-                        }
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
                     },
-                    retina_detect: true
-                });
-            });
-        </script>
-    </body>
-</x-laravel-ui-adminlte::adminlte-layout>
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 200,
+                        line_linked: { opacity: 0.8 }
+                    },
+                    bubble: {
+                        distance: 250,
+                        size: 8,
+                        duration: 2,
+                        opacity: 0.8,
+                        speed: 3
+                    },
+                    push: {
+                        particles_nb: 6
+                    },
+                    remove: {
+                        particles_nb: 2
+                    }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>

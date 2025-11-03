@@ -149,6 +149,15 @@
             </footer>
         </div>
 
+        <!-- REQUIRED SCRIPTS (Cargar primero jQuery y Bootstrap) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- AdminLTE App -->
+        <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/js/adminlte.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- librerias js select2 -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
         <!-- Dark mode toggle -->
         <script>
             (function () {
@@ -168,19 +177,57 @@
                 }
             })();
         </script>
-         <!-- REQUIRED SCRIPTS -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- AdminLTE App -->
-        <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1.0/dist/js/adminlte.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- librerias js select2 -->
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 
+        <!-- Inicializar AdminLTE y Bootstrap dropdowns -->
+        <script>
+            $(document).ready(function() {
+                // Asegurar que los dropdowns de Bootstrap funcionen correctamente
+                $('.dropdown-toggle').each(function() {
+                    $(this).dropdown();
+                });
+
+                // Inicializar PushMenu manualmente si es necesario
+                $('[data-widget="pushmenu"]').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    $('body').toggleClass('sidebar-collapse sidebar-open');
+                });
+
+                // Asegurar que el dropdown del usuario funcione
+                $('.user-menu .dropdown-toggle').off('click').on('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var $parent = $(this).parent();
+                    var isOpen = $parent.hasClass('show');
+
+                    // Cerrar todos los dropdowns
+                    $('.dropdown').removeClass('show');
+                    $('.dropdown-menu').removeClass('show');
+
+                    // Toggle el dropdown actual
+                    if (!isOpen) {
+                        $parent.addClass('show');
+                        $parent.find('.dropdown-menu').addClass('show');
+                    }
+                });
+
+                // Cerrar dropdown al hacer clic fuera
+                $(document).on('click', function(e) {
+                    if (!$(e.target).closest('.dropdown').length) {
+                        $('.dropdown').removeClass('show');
+                        $('.dropdown-menu').removeClass('show');
+                    }
+                });
+
+                // Prevenir que el dropdown se cierre al hacer clic dentro
+                $('.dropdown-menu').on('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        </script>
 
         <!-- cargar codigo javascript desde los blade -->
         @stack('scripts')
-        
+
         <!-- CUSTOM SCRIPTS -->
         <script>
             $(document).ready(function() {
