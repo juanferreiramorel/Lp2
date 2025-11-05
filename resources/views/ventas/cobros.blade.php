@@ -146,7 +146,7 @@
     </div>
 @endsection
 
-@push('page_scripts')
+@push('scripts')
     <script type="text/javascript">
         $(document).ready(function() {
             /** evitar submit con el boton enter **/
