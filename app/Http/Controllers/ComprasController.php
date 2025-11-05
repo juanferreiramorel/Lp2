@@ -71,9 +71,11 @@ class ComprasController extends Controller
     public function store(Request $request)
     {
         $input = $request->all();
-        // Defaults para required_if
-        $input['intervalo'] = $input['intervalo'] ?? 0;
-        $input['cantidad_cuotas'] = $input['cantidad_cuotas'] ?? 0;
+        // Limpiar campos cuando es CONTADO
+        if (isset($input['condicion_compra']) && $input['condicion_compra'] === 'CONTADO') {
+            $input['intervalo'] = null;
+            $input['cantidad_cuotas'] = null;
+        }
 
         $validator = Validator::make($input, [
             'id_proveedor'        => 'required|exists:proveedores,id_proveedor',
@@ -84,8 +86,8 @@ class ComprasController extends Controller
             'factura'             => 'nullable|string|max:20',
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
-            'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
+            'intervalo'           => 'nullable|required_if:condicion_compra,CREDITO|in:7,15,30',
+            'cantidad_cuotas'     => 'nullable|required_if:condicion_compra,CREDITO|integer|min:1|max:36',
 
             // detalle desde vista (igual que ventas): codigo[], cantidad[], precio[]
             'codigo'              => 'required|array|min:1',
@@ -106,7 +108,7 @@ class ComprasController extends Controller
             'condicion_compra.required'    => 'La condición es obligatoria.',
             'condicion_compra.in'          => 'La condición no es válida.',
             'intervalo.required_if'        => 'El intervalo es obligatorio cuando es crédito.',
-            'intervalo.in'                 => 'El intervalo debe ser 0, 7, 15 o 30.',
+            'intervalo.in'                 => 'El intervalo debe ser 7, 15 o 30 días.',
             'cantidad_cuotas.required_if'  => 'La cantidad de cuotas es obligatoria cuando es crédito.',
             'cantidad_cuotas.integer'      => 'La cantidad de cuotas debe ser un número entero.',
             'cantidad_cuotas.min'          => 'La cantidad de cuotas debe ser al menos 1 cuando es crédito.', // CORREGIDO
@@ -131,10 +133,10 @@ class ComprasController extends Controller
 
         DB::beginTransaction();
         try {
-            // Si es contado, forzamos 0s en crédito
+            // Si es contado, aseguramos que sean null (ya se limpiaron arriba)
             if (($input['condicion_compra'] ?? 'CONTADO') === 'CONTADO') {
-                $input['intervalo'] = 0;
-                $input['cantidad_cuotas'] = 0;
+                $input['intervalo'] = null;
+                $input['cantidad_cuotas'] = null;
             }
 
             // Cabecera
@@ -146,8 +148,8 @@ class ComprasController extends Controller
                 'id_sucursal'         => $idSucursal,
                 'factura'             => $input['factura'] ?? null,
                 'condicion_compra'    => $input['condicion_compra'],
-                'intervalo'           => (int)$input['intervalo'],
-                'cantidad_cuotas'     => (int)$input['cantidad_cuotas'],
+                'intervalo'           => $input['intervalo'],
+                'cantidad_cuotas'     => $input['cantidad_cuotas'],
             ], 'id_compra');
 
             // Detalle + AUMENTO de stock por sucursal
@@ -246,8 +248,11 @@ class ComprasController extends Controller
     public function update(Request $request, $id)
     {
         $input = $request->all();
-        $input['intervalo'] = $input['intervalo'] ?? 0;
-        $input['cantidad_cuotas'] = $input['cantidad_cuotas'] ?? 0;
+        // Limpiar campos cuando es CONTADO
+        if (isset($input['condicion_compra']) && $input['condicion_compra'] === 'CONTADO') {
+            $input['intervalo'] = null;
+            $input['cantidad_cuotas'] = null;
+        }
 
         $validator = Validator::make($input, [
             'id_proveedor'        => 'required|exists:proveedores,id_proveedor',
@@ -258,8 +263,8 @@ class ComprasController extends Controller
             'factura'             => 'nullable|string|max:20',
 
             'condicion_compra'    => 'required|in:CONTADO,CREDITO',
-            'intervalo'           => 'required_if:condicion_compra,CREDITO|in:0,7,15,30',
-            'cantidad_cuotas'     => 'required_if:condicion_compra,CREDITO|integer|min:1|max:36', // CORREGIDO: min:0 a min:1
+            'intervalo'           => 'nullable|required_if:condicion_compra,CREDITO|in:7,15,30',
+            'cantidad_cuotas'     => 'nullable|required_if:condicion_compra,CREDITO|integer|min:1|max:36',
 
             'codigo'              => 'required|array|min:1',
             'codigo.*'            => 'required|integer',
@@ -279,7 +284,7 @@ class ComprasController extends Controller
             'condicion_compra.required'    => 'La condición es obligatoria.',
             'condicion_compra.in'          => 'La condición no es válida.',
             'intervalo.required_if'        => 'El intervalo es obligatorio cuando es crédito.',
-            'intervalo.in'                 => 'El intervalo debe ser 0, 7, 15 o 30.',
+            'intervalo.in'                 => 'El intervalo debe ser 7, 15 o 30 días.',
             'cantidad_cuotas.required_if'  => 'La cantidad de cuotas es obligatoria cuando es crédito.',
             'cantidad_cuotas.integer'      => 'La cantidad de cuotas debe ser un número entero.',
             'cantidad_cuotas.min'          => 'La cantidad de cuotas debe ser al menos 1 cuando es crédito.', // CORREGIDO
@@ -314,10 +319,10 @@ class ComprasController extends Controller
 
         DB::beginTransaction();
         try {
-            // Si es contado, forzamos 0s
+            // Si es contado, aseguramos que sean null (ya se limpiaron arriba)
             if (($input['condicion_compra'] ?? 'CONTADO') === 'CONTADO') {
-                $input['intervalo'] = 0;
-                $input['cantidad_cuotas'] = 0;
+                $input['intervalo'] = null;
+                $input['cantidad_cuotas'] = null;
             }
 
             // Ajustar stock por diferencia
@@ -342,8 +347,8 @@ class ComprasController extends Controller
                 'id_sucursal'         => $idSucursal,
                 'factura'             => $input['factura'] ?? null,
                 'condicion_compra'    => $input['condicion_compra'],
-                'intervalo'           => (int)$input['intervalo'],
-                'cantidad_cuotas'     => (int)$input['cantidad_cuotas'],
+                'intervalo'           => $input['intervalo'],
+                'cantidad_cuotas'     => $input['cantidad_cuotas'],
             ]);
 
             // Reemplazar detalle (simplifica; alternativamente upsert)
